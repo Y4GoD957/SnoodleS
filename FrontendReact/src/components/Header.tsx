@@ -60,3 +60,5 @@ export function Header({ onDashboard, onLogin, onLogout, isAuthenticated = false
         </div>
       </div>
     </header>
+  );
+}

@@ -8,14 +8,14 @@ interface DashboardProps {
 
 // Mock data - em uma aplicação real, estes dados viriam de uma API
 const mockData = {
-  totalSaas: 12,
+  totalWebsites: 12,
   totalRevenue: 24500,
   monthlyRevenue: 8950,
   recentSales: [
-    { id: 1, client: "João Silva", saas: "E-commerce Medical", value: 2500, date: "2024-01-15" },
-    { id: 2, client: "Maria Santos", saas: "Course Platform", value: 1800, date: "2024-01-14" },
-    { id: 3, client: "Pedro Costa", saas: "Clinic Manager", value: 3200, date: "2024-01-13" },
-    { id: 4, client: "Ana Lima", saas: "Restaurant POS", value: 2100, date: "2024-01-12" },
+    { id: 1, client: "João Silva", website: "E-commerce Medical", value: 2500, date: "2024-01-15" },
+    { id: 2, client: "Maria Santos", website: "Course Platform", value: 1800, date: "2024-01-14" },
+    { id: 3, client: "Pedro Costa", website: "Clinic Manager", value: 3200, date: "2024-01-13" },
+    { id: 4, client: "Ana Lima", website: "Restaurant POS", value: 2100, date: "2024-01-12" },
   ]
 };
 
@@ -26,7 +26,7 @@ export function Dashboard({ onBack }: DashboardProps) {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard Financeiro</h1>
-            <p className="text-muted-foreground">Acompanhe o desempenho dos seus SaaS criados</p>
+            <p className="text-muted-foreground">Acompanhe o desempenho dos seus Websites criados</p>
           </div>
           <Button variant="outline" onClick={onBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -38,11 +38,11 @@ export function Dashboard({ onBack }: DashboardProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de SaaS Vendidos</CardTitle>
+              <CardTitle className="text-sm font-medium">Total de Websites Vendidos</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">{mockData.totalSaas}</div>
+              <div className="text-2xl font-bold text-primary">{mockData.totalWebsites}</div>
               <p className="text-xs text-muted-foreground">
                 +3 desde o mês passado
               </p>
@@ -91,7 +91,7 @@ export function Dashboard({ onBack }: DashboardProps) {
                 <div key={sale.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
                   <div className="space-y-1">
                     <p className="font-medium text-foreground">{sale.client}</p>
-                    <p className="text-sm text-muted-foreground">{sale.saas}</p>
+                    <p className="text-sm text-muted-foreground">{sale.website}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-primary">
@@ -111,7 +111,7 @@ export function Dashboard({ onBack }: DashboardProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Tipos de SaaS Mais Vendidos</CardTitle>
+              <CardTitle>Tipos de Websites Mais Vendidos</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">

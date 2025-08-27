@@ -14,12 +14,10 @@ export function Header({ onDashboard, onLogin, onLogout, isAuthenticated = false
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center shadow-glow">
-              <Sparkles className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img src="/logoClaro.png" alt="Logo da empresa" className="w-16 h-16 rounded-lg object-contain"/>
             <div>
-              <h1 className="text-xl font-bold text-foreground">SaaS Creator</h1>
-              <p className="text-xs text-muted-foreground">Crie seu SaaS em minutos</p>
+              <h1 className="text-xl font-bold text-foreground">SnoodleS</h1>
+              <p className="text-xs text-muted-foreground">Crie seu Website em minutos</p>
             </div>
           </div>
 

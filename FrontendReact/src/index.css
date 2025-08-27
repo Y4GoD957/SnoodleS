@@ -1,68 +1,115 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --background: 0 0% 100%;
+    --foreground: 300 85% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 300 85% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 300 85% 15%;
+
+    --primary: 300 85% 27%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 300 75% 35%;
+    --primary-dark: 300 90% 20%;
+
+    --secondary: 300 20% 95%;
+    --secondary-foreground: 300 85% 27%;
+
+    --muted: 300 15% 96%;
+    --muted-foreground: 300 10% 50%;
+
+    --accent: 280 85% 32%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 300 25% 90%;
+    --input: 300 25% 90%;
+    --ring: 300 85% 27%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(300, 85%, 27%), hsl(280, 85%, 32%));
+    --gradient-light: linear-gradient(135deg, hsl(300, 40%, 95%), hsl(280, 40%, 98%));
+    --gradient-hero: linear-gradient(135deg, hsl(300, 85%, 27%) 0%, hsl(280, 85%, 32%) 50%, hsl(260, 85%, 35%) 100%);
+    
+    --shadow-glow: 0 10px 40px hsl(300 85% 27% / 0.2);
+    --shadow-card: 0 4px 20px hsl(300 20% 50% / 0.1);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
-  a:hover {
-    color: #747bff;
+
+  .dark {
+    --background: 300 20% 8%;
+    --foreground: 300 20% 95%;
+
+    --card: 300 20% 10%;
+    --card-foreground: 300 20% 95%;
+
+    --popover: 300 20% 10%;
+    --popover-foreground: 300 20% 95%;
+
+    --primary: 300 75% 65%;
+    --primary-foreground: 300 20% 10%;
+    --primary-light: 300 70% 70%;
+    --primary-dark: 300 80% 55%;
+
+    --secondary: 300 20% 15%;
+    --secondary-foreground: 300 20% 95%;
+
+    --muted: 300 20% 15%;
+    --muted-foreground: 300 10% 60%;
+
+    --accent: 280 75% 60%;
+    --accent-foreground: 300 20% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 300 20% 95%;
+
+    --border: 300 20% 20%;
+    --input: 300 20% 20%;
+    --ring: 300 75% 65%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(300, 75%, 65%), hsl(280, 75%, 70%));
+    --gradient-light: linear-gradient(135deg, hsl(300, 30%, 12%), hsl(280, 30%, 15%));
+    --gradient-hero: linear-gradient(135deg, hsl(300, 75%, 65%) 0%, hsl(280, 75%, 70%) 50%, hsl(260, 75%, 75%) 100%);
+    
+    --shadow-glow: 0 10px 40px hsl(300 75% 65% / 0.3);
+    --shadow-card: 0 4px 20px hsl(300 30% 10% / 0.5);
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
   }
 }

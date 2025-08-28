@@ -26,7 +26,13 @@ interface QuestionnaireScreenProps {
   onBack: () => void;
 }
 
-const questions = [
+const questions: {
+    id: keyof QuestionnaireData;
+    title: string;
+    type: "input" | "radio" | "checkbox" | "textarea";
+    placeholder?: string;
+    options?: { id: string; label: string }[];
+  }[] = [
   {
     id: 'niche',
     title: 'Qual é o nicho do seu aplicativo?',
@@ -114,7 +120,7 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
     features: []
   });
 
-  const handleAnswer = (questionId: string, value: any) => {
+  const handleAnswer = (questionId: keyof QuestionnaireData,value: QuestionnaireData[keyof QuestionnaireData]) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
@@ -157,7 +163,7 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
 
   return (
     <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full shadow-card border-0 bg-card/80 backdrop-blur-sm">
+      <Card className="max-w-2xl w-full border-0 bg-card/90 backdrop-blur-sm shadow-2xl rounded-xl">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between mb-4">
             <CardTitle className="text-2xl font-bold text-foreground">

@@ -9,7 +9,7 @@ interface WelcomeScreenProps {
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
   return (
     <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full shadow-card border-0 bg-card/80 backdrop-blur-sm">
+      <Card className="max-w-lg w-full border-0 bg-card/90 backdrop-blur-sm shadow-2xl rounded-xl">
         <CardContent className="p-8 text-center">
           <div className="mb-6">
               <img src="/logo.png" alt="Logo da empresa" className="w-28 h-28 mx-auto rounded-xl object-contain" />

@@ -9,13 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 
 interface LoginScreenProps {
   onLogin: (email: string, password: string) => void;
+  onForgotPassword: () => void;
   onBack: () => void;
   onShowSignup: () => void;
   onGoogleLogin: () => void;
   onGithubLogin: () => void;
 }
 
-export function LoginScreen({ onLogin, onBack, onShowSignup, onGoogleLogin, onGithubLogin }: LoginScreenProps) {
+export function LoginScreen({ onLogin, onForgotPassword, onBack, onShowSignup, onGoogleLogin, onGithubLogin }: LoginScreenProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +49,7 @@ export function LoginScreen({ onLogin, onBack, onShowSignup, onGoogleLogin, onGi
 
   return (
     <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4">
-      <Card className="max-w-md w-full shadow-card border-0 bg-card/80 backdrop-blur-sm">
+      <Card className="max-w-lg w-full border border-purple-300/20 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(168,85,247,0.35)] rounded-xl">
         <CardHeader className="text-center">
           <Button 
             variant="ghost" 
@@ -97,6 +98,17 @@ export function LoginScreen({ onLogin, onBack, onShowSignup, onGoogleLogin, onGi
                   className="pl-10"
                   required
                 />
+              </div>
+              {/* Novo link de esqueci a senha */}
+              <div className="flex justify-end">
+                <Button 
+                  type="button"
+                  variant="link"
+                  onClick={onForgotPassword}
+                  className="p-0 h-auto text-sm text-primary"
+                >
+                  Esqueci minha senha
+                </Button>
               </div>
             </div>
 

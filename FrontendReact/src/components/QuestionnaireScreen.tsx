@@ -163,7 +163,7 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
 
   return (
     <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full border-0 bg-card/90 backdrop-blur-sm shadow-2xl rounded-xl">
+      <Card className="max-w-lg w-full border border-purple-300/20 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(168,85,247,0.35)] rounded-xl">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between mb-4">
             <CardTitle className="text-2xl font-bold text-foreground">

@@ -8,8 +8,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { HexColorPicker } from "react-colorful";
 
 export interface QuestionnaireData {
+  projectName: string;
   niche: string;
   colors: string;
   features: string[];
@@ -19,7 +21,12 @@ export interface QuestionnaireData {
   adminPanel: string;
   platform: string;
   observations: string;
+  hasLogo: boolean;
+  logoFile: File | null;
+  colorPalette: string[];
 }
+
+type QuestionId = keyof QuestionnaireData | "logo" | "colors";
 
 interface QuestionnaireScreenProps {
   onComplete: (data: QuestionnaireData) => void;
@@ -27,109 +34,127 @@ interface QuestionnaireScreenProps {
 }
 
 const questions: {
-    id: keyof QuestionnaireData;
-    title: string;
-    type: "input" | "radio" | "checkbox" | "textarea";
-    placeholder?: string;
-    options?: { id: string; label: string }[];
-  }[] = [
+  id: QuestionId;
+  title: string;
+  type: "input" | "radio" | "checkbox" | "textarea" | "custom";
+  placeholder?: string;
+  options?: { id: string; label: string }[];
+}[] = [
   {
-    id: 'niche',
-    title: 'Qual é o nicho do seu aplicativo?',
-    type: 'input',
-    placeholder: 'Ex: clínica, e-commerce, cursos online, etc.'
+    id: "projectName",
+    title: "Qual é o nome do seu projeto?",
+    type: "input",
+    placeholder: "Ex: SnoodleS, ClínicaX, MinhaLoja",
   },
   {
-    id: 'colors',
-    title: 'Quais cores principais você gostaria de usar?',
-    type: 'input',
-    placeholder: 'Ex: azul e branco, verde escuro, tons pastéis'
+    id: "niche",
+    title: "Qual é o nicho do seu aplicativo?",
+    type: "input",
+    placeholder: "Ex: clínica, e-commerce, cursos online, etc.",
   },
   {
-    id: 'features',
-    title: 'Quais funcionalidades essenciais você precisa?',
-    type: 'checkbox',
+    id: "logo",
+    title: "Você possui uma logo para o projeto?",
+    type: "custom",
+  },
+  {
+    id: "colors",
+    title: "Quais cores principais você gostaria de usar?",
+    type: "custom",
+  },
+  {
+    id: "features",
+    title: "Quais funcionalidades essenciais você precisa?",
+    type: "checkbox",
     options: [
-      { id: 'login', label: 'Sistema de Login' },
-      { id: 'scheduling', label: 'Agendamento' },
-      { id: 'chat', label: 'Chat/Mensagens' },
-      { id: 'ecommerce', label: 'Carrinho de Compras' },
-      { id: 'automation', label: 'Automações' },
-      { id: 'payments', label: 'Pagamentos' },
-      { id: 'reports', label: 'Relatórios' },
-      { id: 'notifications', label: 'Notificações' }
-    ]
+      { id: "login", label: "Sistema de Login" },
+      { id: "scheduling", label: "Agendamento" },
+      { id: "chat", label: "Chat/Mensagens" },
+      { id: "ecommerce", label: "Carrinho de Compras" },
+      { id: "automation", label: "Automações" },
+      { id: "payments", label: "Pagamentos" },
+      { id: "reports", label: "Relatórios" },
+      { id: "notifications", label: "Notificações" },
+    ],
   },
   {
-    id: 'aiIntegration',
-    title: 'Você gostaria que o aplicativo tivesse integração com IA?',
-    type: 'radio',
+    id: "aiIntegration",
+    title: "Você gostaria que o aplicativo tivesse integração com IA?",
+    type: "radio",
     options: [
-      { id: 'yes', label: 'Sim' },
-      { id: 'no', label: 'Não' }
-    ]
+      { id: "yes", label: "Sim" },
+      { id: "no", label: "Não" },
+    ],
   },
   {
-    id: 'messageAutomation',
-    title: 'Deseja suporte a automação de mensagens?',
-    type: 'radio',
+    id: "messageAutomation",
+    title: "Deseja suporte a automação de mensagens?",
+    type: "radio",
     options: [
-      { id: 'whatsapp', label: 'WhatsApp' },
-      { id: 'email', label: 'E-mail' },
-      { id: 'telegram', label: 'Telegram' },
-      { id: 'all', label: 'Todos os acima' },
-      { id: 'none', label: 'Nenhum' }
-    ]
+      { id: "whatsapp", label: "WhatsApp" },
+      { id: "email", label: "E-mail" },
+      { id: "telegram", label: "Telegram" },
+      { id: "all", label: "Todos os acima" },
+      { id: "none", label: "Nenhum" },
+    ],
   },
   {
-    id: 'targetAudience',
-    title: 'Qual é o público-alvo principal?',
-    type: 'input',
-    placeholder: 'Ex: clientes finais, empreses, crianças, médicos, professores'
+    id: "targetAudience",
+    title: "Qual é o público-alvo principal?",
+    type: "input",
+    placeholder: "Ex: clientes finais, empresas, crianças, médicos, professores",
   },
   {
-    id: 'adminPanel',
-    title: 'Deseja incluir painel administrativo?',
-    type: 'radio',
+    id: "adminPanel",
+    title: "Deseja incluir painel administrativo?",
+    type: "radio",
     options: [
-      { id: 'yes', label: 'Sim' },
-      { id: 'no', label: 'Não' }
-    ]
+      { id: "yes", label: "Sim" },
+      { id: "no", label: "Não" },
+    ],
   },
   {
-    id: 'platform',
-    title: 'Deseja que o software seja web, mobile ou ambos?',
-    type: 'radio',
+    id: "platform",
+    title: "Deseja que o software seja web, mobile ou ambos?",
+    type: "radio",
     options: [
-      { id: 'web', label: 'Apenas Web' },
-      { id: 'mobile', label: 'Apenas Mobile' },
-      { id: 'both', label: 'Web e Mobile' }
-    ]
+      { id: "web", label: "Apenas Web" },
+      { id: "mobile", label: "Apenas Mobile" },
+      { id: "both", label: "Web e Mobile" },
+    ],
   },
   {
-    id: 'observations',
-    title: 'Observações adicionais do cliente',
-    type: 'textarea',
-    placeholder: 'Descreva qualquer informação adicional, requisitos específicos ou observações importantes sobre o projeto...'
-  }
+    id: "observations",
+    title: "Observações adicionais do cliente",
+    type: "textarea",
+    placeholder:
+      "Descreva qualquer informação adicional, requisitos específicos ou observações importantes sobre o projeto...",
+  },
 ];
 
 export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Partial<QuestionnaireData>>({
-    features: []
+    features: [],
+    colorPalette: ["#000000"],
+    hasLogo: false,
+    logoFile: null,
+    projectName: "",
   });
 
-  const handleAnswer = (questionId: keyof QuestionnaireData,value: QuestionnaireData[keyof QuestionnaireData]) => {
-    setAnswers(prev => ({
+  const handleAnswer = <K extends QuestionId>(
+    questionId: K,
+    value: K extends keyof QuestionnaireData ? QuestionnaireData[K] : unknown
+  ) => {
+    setAnswers((prev) => ({
       ...prev,
-      [questionId]: value
+      [questionId]: value,
     }));
   };
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
+      setCurrentQuestion((prev) => prev + 1);
     } else {
       onComplete(answers as QuestionnaireData);
     }
@@ -137,7 +162,7 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
+      setCurrentQuestion((prev) => prev - 1);
     } else {
       onBack();
     }
@@ -146,16 +171,16 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
   const isAnswered = () => {
     const question = questions[currentQuestion];
     const answer = answers[question.id as keyof QuestionnaireData];
-    
-    // Observações é opcional, pode estar vazio
-    if (question.id === 'observations') {
-      return true;
-    }
-    
-    if (question.type === 'checkbox') {
-      return Array.isArray(answer) && answer.length > 0;
-    }
-    return answer && answer.toString().trim() !== '';
+
+    if (question.id === "observations") return true;
+
+    if (question.type === "checkbox") return Array.isArray(answer) && answer.length > 0;
+
+    if (question.id === "logo") return answers.hasLogo !== undefined;
+
+    if (question.id === "colors") return (answers.colorPalette ?? []).length > 0;
+
+    return answer && answer.toString().trim() !== "";
   };
 
   const progress = ((currentQuestion + 1) / questions.length) * 100;
@@ -169,45 +194,40 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
             <CardTitle className="text-2xl font-bold text-foreground">
               Pergunta {currentQuestion + 1} de {questions.length}
             </CardTitle>
-            <div className="text-sm text-muted-foreground">
-              {Math.round(progress)}%
-            </div>
+            <div className="text-sm text-muted-foreground">{Math.round(progress)}%</div>
           </div>
           <Progress value={progress} className="h-2" />
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <h3 className="text-xl font-semibold text-foreground mb-6">
-            {question.title}
-          </h3>
+          <h3 className="text-xl font-semibold text-foreground mb-6">{question.title}</h3>
 
           <div className="space-y-4">
-            {question.type === 'input' && (
-              <div>
-                <Input
-                  placeholder={question.placeholder}
-                  value={answers[question.id as keyof QuestionnaireData] as string || ''}
-                  onChange={(e) => handleAnswer(question.id, e.target.value)}
-                  className="text-base"
-                />
-              </div>
+            {/* INPUT */}
+            {question.type === "input" && (
+              <Input
+                placeholder={question.placeholder}
+                value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
+                onChange={(e) => handleAnswer(question.id, e.target.value)}
+                className="text-base"
+              />
             )}
 
-            {question.type === 'textarea' && (
-              <div>
-                <Textarea
-                  placeholder={question.placeholder}
-                  value={answers[question.id as keyof QuestionnaireData] as string || ''}
-                  onChange={(e) => handleAnswer(question.id, e.target.value)}
-                  className="text-base min-h-[120px]"
-                  rows={6}
-                />
-              </div>
+            {/* TEXTAREA */}
+            {question.type === "textarea" && (
+              <Textarea
+                placeholder={question.placeholder}
+                value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
+                onChange={(e) => handleAnswer(question.id, e.target.value)}
+                className="text-base min-h-[120px]"
+                rows={6}
+              />
             )}
 
-            {question.type === 'radio' && question.options && (
+            {/* RADIO */}
+            {question.type === "radio" && question.options && (
               <RadioGroup
-                value={answers[question.id as keyof QuestionnaireData] as string || ''}
+                value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
                 onValueChange={(value) => handleAnswer(question.id, value)}
               >
                 {question.options.map((option) => (
@@ -221,7 +241,8 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
               </RadioGroup>
             )}
 
-            {question.type === 'checkbox' && question.options && (
+            {/* CHECKBOX */}
+            {question.type === "checkbox" && question.options && (
               <div className="space-y-3">
                 {question.options.map((option) => (
                   <div key={option.id} className="flex items-center space-x-2">
@@ -230,11 +251,8 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
                       checked={(answers.features || []).includes(option.id)}
                       onCheckedChange={(checked) => {
                         const currentFeatures = answers.features || [];
-                        if (checked) {
-                          handleAnswer('features', [...currentFeatures, option.id]);
-                        } else {
-                          handleAnswer('features', currentFeatures.filter(f => f !== option.id));
-                        }
+                        if (checked) handleAnswer("features", [...currentFeatures, option.id]);
+                        else handleAnswer("features", currentFeatures.filter((f) => f !== option.id));
                       }}
                     />
                     <Label htmlFor={option.id} className="text-base cursor-pointer">
@@ -244,20 +262,117 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
                 ))}
               </div>
             )}
+
+            {/* LOGO */}
+            {question.id === "logo" && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="hasLogo"
+                    checked={Boolean(answers.hasLogo)}
+                    onCheckedChange={(checked) => {
+                      handleAnswer("hasLogo", checked === true);
+                      if (!checked) handleAnswer("logoFile", null);
+                    }}
+                  />
+                  <Label htmlFor="hasLogo" className="text-base cursor-pointer">
+                    Tenho uma logo
+                  </Label>
+                </div>
+
+                {answers.hasLogo ? (
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/svg+xml"
+                      onChange={(e) => handleAnswer("logoFile", e.target.files?.[0] ?? null)}
+                      className="mt-2"
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Formatos permitidos: PNG, JPG, SVG. Recomendado 512x512px. Máx. 2MB.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="noLogo"
+                      checked={!answers.hasLogo}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          handleAnswer("hasLogo", false);
+                          handleAnswer("logoFile", null);
+                        }
+                      }}
+                    />
+                    <Label htmlFor="noLogo" className="text-base cursor-pointer">
+                      Não tenho logo
+                    </Label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* COLORS */}
+            {question.id === "colors" && (
+              <div className="space-y-6">
+                {(answers.colorPalette ?? ["#000000"]).map((color, index) => (
+                  <div key={index} className="space-y-2">
+                    <HexColorPicker
+                      color={color}
+                      onChange={(newColor) => {
+                        const updated = [...(answers.colorPalette ?? [])];
+                        updated[index] = newColor;
+                        handleAnswer("colorPalette", updated);
+                      }}
+                    />
+                    <Input
+                      value={color}
+                      onChange={(e) => {
+                        const updated = [...(answers.colorPalette ?? [])];
+                        updated[index] = e.target.value;
+                        handleAnswer("colorPalette", updated);
+                      }}
+                    />
+                    <div className="flex space-x-2">
+                      {(answers.colorPalette ?? []).length > 1 && (
+                        <Button
+                          variant="destructive"
+                          onClick={() =>
+                            handleAnswer(
+                              "colorPalette",
+                              (answers.colorPalette ?? []).filter((_, i) => i !== index)
+                            )
+                          }
+                        >
+                          Remover
+                        </Button>
+                      )}
+
+                      {(answers.colorPalette ?? []).length < 4 &&
+                        index === ((answers.colorPalette ?? []).length - 1) && (
+                          <Button
+                            onClick={() =>
+                              handleAnswer("colorPalette", [...(answers.colorPalette ?? []), "#000000"])
+                            }
+                          >
+                            Adicionar cor
+                          </Button>
+                        )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between pt-6">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              className="flex items-center"
-            >
+            <Button variant="outline" onClick={handlePrevious} className="flex items-center">
               <ChevronLeft className="w-4 h-4 mr-2" />
-              {currentQuestion === 0 ? 'Voltar ao Início' : 'Anterior'}
+              {currentQuestion === 0 ? "Voltar ao Início" : "Anterior"}
             </Button>
 
             <Button
-              variant={currentQuestion === questions.length - 1 ? 'hero' : 'default'}
+              variant={currentQuestion === questions.length - 1 ? "hero" : "default"}
               onClick={handleNext}
               disabled={!isAnswered()}
               className="flex items-center"
@@ -269,8 +384,7 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
                 </>
               ) : (
                 <>
-                  Próxima
-                  <ChevronRight className="w-4 h-4 ml-2" />
+                  Próxima <ChevronRight className="w-4 h-4 ml-2" />
                 </>
               )}
             </Button>

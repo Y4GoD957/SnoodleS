@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { QuestionnaireScreen, QuestionnaireData } from "@/components/QuestionnaireScreen";
 import { ResultScreen } from "@/components/ResultScreen";
@@ -6,14 +6,19 @@ import { LoginScreen } from "@/components/LoginScreen";
 import { SignupScreen } from "@/components/SignupScreen";
 import { Dashboard } from "@/components/Dashboard";
 import { Header } from "@/components/Header";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 type Screen = 'welcome' | 'questionnaire' | 'result' | 'login' | 'signup' | 'dashboard';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireData | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const { user, loading, signIn, signUp, signOut, signInWithGoogle, signInWithGithub } = useAuth();
+  const { toast } = useToast();
+
+  // Verificar se o usuário está autenticado
+  const isAuthenticated = !!user;
 
   const handleStart = () => {
     setCurrentScreen('questionnaire');
@@ -37,17 +42,23 @@ const Index = () => {
     setCurrentScreen('welcome');
   };
 
-  const handleLogin = (email: string, password: string) => {
-    // Simula autenticação (em uma aplicação real, seria com Supabase)
-    setIsAuthenticated(true);
-    setUser({ email });
-    setCurrentScreen('welcome');
+  const handleLogin = async (email: string, password: string) => {
+    const result = await signIn(email, password);
+    if (!result.error) {
+      setCurrentScreen('welcome');
+    }
+    return result;
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    setCurrentScreen('welcome');
+  const handleLogout = async () => {
+    const { error } = await signOut();
+    if (!error) {
+      setCurrentScreen('welcome');
+      toast({
+        title: "Logout realizado",
+        description: "Você foi desconectado com sucesso.",
+      });
+    }
   };
 
   const handleShowLogin = () => {
@@ -66,22 +77,29 @@ const Index = () => {
     setCurrentScreen('signup');
   };
 
-  const handleSignup = (name: string, email: string, password: string) => {
-    // Aqui você pode integrar com seu backend externo
-    console.log('Signup data:', { name, email, password });
-    setIsAuthenticated(true);
-    setUser({ email });
-    setCurrentScreen('welcome');
+  const handleSignup = async (name: string, email: string, password: string) => {
+    const result = await signUp(email, password, name);
+    if (!result.error) {
+      // Não redirecionar automaticamente - usuário precisa confirmar email
+      setCurrentScreen('login');
+    }
+    return result;
   };
 
-  const handleGoogleAuth = () => {
-    // Aqui você pode integrar com o Google OAuth
-    console.log('Google authentication triggered');
+  const handleGoogleAuth = async () => {
+    const result = await signInWithGoogle();
+    if (!result.error) {
+      setCurrentScreen('welcome');
+    }
+    return result;
   };
 
-  const handleGithubAuth = () => {
-    // Aqui você pode integrar com o GitHub OAuth
-    console.log('GitHub authentication triggered');
+  const handleGithubAuth = async () => {
+    const result = await signInWithGithub();
+    if (!result.error) {
+      setCurrentScreen('welcome');
+    }
+    return result;
   };
 
   const renderScreen = () => {
@@ -132,6 +150,18 @@ const Index = () => {
         return <WelcomeScreen onStart={handleStart} />;
     }
   };
+
+  // Mostrar loading enquanto verificamos a autenticação
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-light flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

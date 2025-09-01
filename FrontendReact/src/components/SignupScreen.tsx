@@ -8,10 +8,10 @@ import { Mail, Lock, ArrowLeft, Github, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface SignupScreenProps {
-  onSignup: (name: string, email: string, password: string) => void;
+  onSignup: (name: string, email: string, password: string) => Promise<{ error: any }>;
   onBack: () => void;
-  onGoogleSignup: () => void;
-  onGithubSignup: () => void;
+  onGoogleSignup: () => Promise<{ error: any }>;
+  onGithubSignup: () => Promise<{ error: any }>;
 }
 
 export function SignupScreen({ onSignup, onBack, onGoogleSignup, onGithubSignup }: SignupScreenProps) {
@@ -80,15 +80,30 @@ export function SignupScreen({ onSignup, onBack, onGoogleSignup, onGithubSignup 
 
     setIsLoading(true);
     
-    // Aqui você pode integrar com seu backend
-    setTimeout(() => {
-      onSignup(name, email, password);
-      setIsLoading(false);
+    try {
+      const { error } = await onSignup(name, email, password);
+      
+      if (error) {
+        toast({
+          title: "Erro ao criar conta",
+          description: error.message || "Erro ao criar conta",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Conta criada com sucesso!",
+          description: "Verifique seu email para confirmar a conta.",
+        });
+      }
+    } catch (err) {
       toast({
-        title: "Conta criada com sucesso!",
-        description: "Bem-vindo ao nosso sistema.",
+        title: "Erro ao criar conta",
+        description: "Ocorreu um erro inesperado",
+        variant: "destructive",
       });
-    }, 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

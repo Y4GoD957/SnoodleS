@@ -8,15 +8,14 @@ import { Mail, Lock, ArrowLeft, Github } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface LoginScreenProps {
-  onLogin: (email: string, password: string) => void;
-  onForgotPassword: () => void;
+  onLogin: (email: string, password: string) => Promise<{ error: any }>;
   onBack: () => void;
   onShowSignup: () => void;
-  onGoogleLogin: () => void;
-  onGithubLogin: () => void;
+  onGoogleLogin: () => Promise<{ error: any }>;
+  onGithubLogin: () => Promise<{ error: any }>;
 }
 
-export function LoginScreen({ onLogin, onForgotPassword, onBack, onShowSignup, onGoogleLogin, onGithubLogin }: LoginScreenProps) {
+export function LoginScreen({ onLogin, onBack, onShowSignup, onGoogleLogin, onGithubLogin }: LoginScreenProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,20 +35,35 @@ export function LoginScreen({ onLogin, onForgotPassword, onBack, onShowSignup, o
 
     setIsLoading(true);
     
-    // Simula autenticação (em uma aplicação real, isso seria feito com Supabase)
-    setTimeout(() => {
-      onLogin(email, password);
-      setIsLoading(false);
+    try {
+      const { error } = await onLogin(email, password);
+      
+      if (error) {
+        toast({
+          title: "Erro no login",
+          description: error.message || "Credenciais inválidas",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Bem-vindo de volta.",
+        });
+      }
+    } catch (err) {
       toast({
-        title: "Login realizado com sucesso!",
-        description: "Bem-vindo de volta.",
+        title: "Erro no login",
+        description: "Ocorreu um erro inesperado",
+        variant: "destructive",
       });
-    }, 1000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full border border-purple-300/20 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(168,85,247,0.35)] rounded-xl">
+      <Card className="max-w-md w-full shadow-card border-0 bg-card/80 backdrop-blur-sm">
         <CardHeader className="text-center">
           <Button 
             variant="ghost" 
@@ -98,17 +112,6 @@ export function LoginScreen({ onLogin, onForgotPassword, onBack, onShowSignup, o
                   className="pl-10"
                   required
                 />
-              </div>
-              {/* Novo link de esqueci a senha */}
-              <div className="flex justify-end">
-                <Button 
-                  type="button"
-                  variant="link"
-                  onClick={onForgotPassword}
-                  className="p-0 h-auto text-sm text-primary"
-                >
-                  Esqueci minha senha
-                </Button>
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
@@ -31,7 +31,6 @@ export interface DashboardStats {
 
 /**
  * Hook para buscar e gerenciar dados do dashboard
- * Conecta-se ao Supabase para obter dados reais do usuário logado
  */
 export function useDashboardData() {
   const { user } = useAuth();
@@ -46,23 +45,15 @@ export function useDashboardData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    loadDashboardData();
-  }, [user]);
-
-  const loadDashboardData = async () => {
+  // Memoizar loadDashboardData para evitar loops infinitos
+  const loadDashboardData = useCallback(async () => {
     if (!user) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      // Buscar todos os projetos do usuário
+      // Buscar projetos
       const { data: projects, error: projectsError } = await supabase
         .from('projects')
         .select('*')
@@ -72,7 +63,7 @@ export function useDashboardData() {
       if (projectsError) throw projectsError;
 
       // Buscar metas do mês atual
-      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+      const currentMonth = new Date().toISOString().slice(0, 7);
       const { data: goals, error: goalsError } = await supabase
         .from('monthly_goals')
         .select('*')
@@ -85,14 +76,12 @@ export function useDashboardData() {
       // Calcular estatísticas
       const totalProjects = projects?.length || 0;
       const totalRevenue = projects?.reduce((sum, p) => sum + Number(p.value), 0) || 0;
-      
-      // Receita do mês atual
-      const currentMonthProjects = projects?.filter(p => 
+
+      const currentMonthProjects = projects?.filter(p =>
         p.sale_date?.startsWith(currentMonth)
       ) || [];
       const monthlyRevenue = currentMonthProjects.reduce((sum, p) => sum + Number(p.value), 0);
 
-      // Estatísticas por tipo de projeto
       const projectTypeStats: { [key: string]: number } = {};
       projects?.forEach(project => {
         projectTypeStats[project.project_type] = (projectTypeStats[project.project_type] || 0) + 1;
@@ -112,9 +101,14 @@ export function useDashboardData() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  // Função para adicionar um novo projeto
+  // useEffect atualizado, sem warnings
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  // Adicionar projeto
   const addProject = async (projectData: Omit<Project, 'id' | 'created_at'>) => {
     if (!user) return { error: 'Usuário não autenticado' };
 
@@ -125,7 +119,6 @@ export function useDashboardData() {
 
       if (error) throw error;
 
-      // Recarregar dados após inserção
       await loadDashboardData();
       return { error: null };
     } catch (err) {
@@ -134,13 +127,13 @@ export function useDashboardData() {
     }
   };
 
-  // Função para definir metas mensais
+  // Definir metas mensais
   const setMonthlyGoals = async (salesGoal: number, revenueGoal: number) => {
     if (!user) return { error: 'Usuário não autenticado' };
 
     try {
       const currentMonth = new Date().toISOString().slice(0, 7);
-      
+
       const { error } = await supabase
         .from('monthly_goals')
         .upsert([{
@@ -152,7 +145,6 @@ export function useDashboardData() {
 
       if (error) throw error;
 
-      // Recarregar dados após atualização
       await loadDashboardData();
       return { error: null };
     } catch (err) {

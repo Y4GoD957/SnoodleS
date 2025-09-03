@@ -7,12 +7,16 @@ import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, ArrowLeft, Github } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface AuthResult {
+  error: Error | null;
+}
+
 interface LoginScreenProps {
-  onLogin: (email: string, password: string) => Promise<{ error: any }>;
+  onLogin: (email: string, password: string) => Promise<AuthResult>;
   onBack: () => void;
   onShowSignup: () => void;
-  onGoogleLogin: () => Promise<{ error: any }>;
-  onGithubLogin: () => Promise<{ error: any }>;
+  onGoogleLogin: () => Promise<AuthResult>;
+  onGithubLogin: () => Promise<AuthResult>;
 }
 
 export function LoginScreen({ onLogin, onBack, onShowSignup, onGoogleLogin, onGithubLogin }: LoginScreenProps) {

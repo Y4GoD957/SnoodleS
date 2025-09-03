@@ -7,11 +7,15 @@ import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, ArrowLeft, Github, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface AuthResult {
+  error: Error | null;
+}
+
 interface SignupScreenProps {
-  onSignup: (name: string, email: string, password: string) => Promise<{ error: any }>;
+  onSignup: (name: string, email: string, password: string) => Promise<AuthResult>;
   onBack: () => void;
-  onGoogleSignup: () => Promise<{ error: any }>;
-  onGithubSignup: () => Promise<{ error: any }>;
+  onGoogleSignup: () => Promise<AuthResult>;
+  onGithubSignup: () => Promise<AuthResult>;
 }
 
 export function SignupScreen({ onSignup, onBack, onGoogleSignup, onGithubSignup }: SignupScreenProps) {

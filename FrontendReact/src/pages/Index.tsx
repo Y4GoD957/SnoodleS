@@ -16,7 +16,6 @@ const Index = () => {
   const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireData | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ email: string } | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const { toast } = useToast();
 
@@ -39,35 +38,26 @@ const Index = () => {
   const handleShowSignup = () => setCurrentScreen('signup');
   const handleShowDashboard = () => setCurrentScreen(isAuthenticated ? 'dashboard' : 'login');
 
-  // === Funções de autenticação simulada ===
+  // === Funções de autenticação simulada (sem loading) ===
   const handleLogin = async (email: string, password: string) => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
     setIsAuthenticated(true);
     setUser({ email });
     setCurrentScreen('welcome');
-    setLoading(false);
     return { error: null };
   };
 
   const handleSignup = async (name: string, email: string, password: string) => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
     console.log('Signup data:', { name, email, password });
     setIsAuthenticated(true);
     setUser({ email });
     setCurrentScreen('welcome');
-    setLoading(false);
     return { error: null };
   };
 
   const handleLogout = async () => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 300));
     setIsAuthenticated(false);
     setUser(null);
     setCurrentScreen('welcome');
-    setLoading(false);
     toast({
       title: "Logout realizado",
       description: "Você foi desconectado com sucesso.",
@@ -75,24 +65,18 @@ const Index = () => {
   };
 
   const handleGoogleAuth = async (): Promise<{ error: null }> => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
     console.log('Google authentication triggered');
     setIsAuthenticated(true);
     setUser({ email: 'user@gmail.com' });
     setCurrentScreen('welcome');
-    setLoading(false);
     return { error: null };
   };
 
   const handleGithubAuth = async (): Promise<{ error: null }> => {
-    setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
     console.log('GitHub authentication triggered');
     setIsAuthenticated(true);
     setUser({ email: 'user@github.com' });
     setCurrentScreen('welcome');
-    setLoading(false);
     return { error: null };
   };
 
@@ -141,18 +125,6 @@ const Index = () => {
         return <WelcomeScreen onStart={handleStart} />;
     }
   };
-
-  // === Loading global simulado ===
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-light flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">

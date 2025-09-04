@@ -49,8 +49,10 @@ export function Dashboard({ onBack }: DashboardProps) {
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard Financeiro</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold text-primary-foreground mb-2">
+              Dashboard Financeiro
+            </h1>
+            <p className="text-primary-foreground/80">
               Bem-vindo, {user?.email?.split('@')[0]}! Acompanhe o desempenho dos seus projetos
             </p>
           </div>

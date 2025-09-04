@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Sparkles, User, LogOut, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   onDashboard?: () => void;
@@ -14,15 +15,17 @@ export function Header({ onDashboard, onLogin, onLogout, isAuthenticated = false
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <img
-              src="/logoClaro.png"
-              alt="Logo da empresa"
-              className="w-16 h-16 rounded-lg object-contain"
-            />
-            <div>
-              <h1 className="text-xl font-bold text-foreground">SnoodleS</h1>
-              <p className="text-xs text-muted-foreground">Crie seu Website em minutos</p>
-            </div>
+            <Link to="/" className="flex items-center space-x-3">
+              <img
+                src="/logoClaro.png"
+                alt="Logo da empresa"
+                className="w-16 h-16 rounded-lg object-contain"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-foreground">SnoodleS</h1>
+                <p className="text-xs text-muted-foreground">Crie seu Website em minutos</p>
+              </div>
+            </Link>
           </div>
 
           <div className="flex items-center space-x-4">

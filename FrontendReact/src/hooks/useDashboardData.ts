@@ -77,13 +77,12 @@ export function useDashboardData() {
       const totalProjects = projects?.length || 0;
       const totalRevenue = projects?.reduce((sum, p) => sum + Number(p.value), 0) || 0;
 
-      const currentMonthProjects = projects?.filter(p =>
-        p.sale_date?.startsWith(currentMonth)
-      ) || [];
+      const currentMonthProjects =
+        projects?.filter((p) => p.sale_date?.startsWith(currentMonth)) || [];
       const monthlyRevenue = currentMonthProjects.reduce((sum, p) => sum + Number(p.value), 0);
 
       const projectTypeStats: { [key: string]: number } = {};
-      projects?.forEach(project => {
+      projects?.forEach((project) => {
         projectTypeStats[project.project_type] = (projectTypeStats[project.project_type] || 0) + 1;
       });
 
@@ -134,14 +133,14 @@ export function useDashboardData() {
     try {
       const currentMonth = new Date().toISOString().slice(0, 7);
 
-      const { error } = await supabase
-        .from('monthly_goals')
-        .upsert([{
+      const { error } = await supabase.from('monthly_goals').upsert([
+        {
           user_id: user.id,
           month_year: currentMonth,
           sales_goal: salesGoal,
           revenue_goal: revenueGoal,
-        }]);
+        },
+      ]);
 
       if (error) throw error;
 

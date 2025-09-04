@@ -19,13 +19,13 @@ export function useAuth() {
 
   useEffect(() => {
     // Configurar listener de mudanças de auth PRIMEIRO
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     // DEPOIS verificar sessão existente
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -49,16 +49,16 @@ export function useAuth() {
   // Função para criar conta
   const signUp = async (email: string, password: string, name?: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          name: name || email.split('@')[0]
-        }
-      }
+          name: name || email.split('@')[0],
+        },
+      },
     });
     return { error };
   };
@@ -72,12 +72,12 @@ export function useAuth() {
   // Função para login com Google
   const signInWithGoogle = async () => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl
-      }
+        redirectTo: redirectUrl,
+      },
     });
     return { error };
   };
@@ -85,12 +85,12 @@ export function useAuth() {
   // Função para login com GitHub
   const signInWithGithub = async () => {
     const redirectUrl = `${window.location.origin}/`;
-    
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: redirectUrl
-      }
+        redirectTo: redirectUrl,
+      },
     });
     return { error };
   };

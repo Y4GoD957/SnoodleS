@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { WelcomeScreen } from "@/components/WelcomeScreen";
-import { QuestionnaireScreen, QuestionnaireData } from "@/components/QuestionnaireScreen";
-import { ResultScreen } from "@/components/ResultScreen";
-import { LoginScreen } from "@/components/LoginScreen";
-import { SignupScreen } from "@/components/SignupScreen";
-import { Dashboard } from "@/components/Dashboard";
-import { Header } from "@/components/Header";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from 'react';
+import { WelcomeScreen } from '@/components/WelcomeScreen';
+import { QuestionnaireScreen, QuestionnaireData } from '@/components/QuestionnaireScreen';
+import { ResultScreen } from '@/components/ResultScreen';
+import { LoginScreen } from '@/components/LoginScreen';
+import { SignupScreen } from '@/components/SignupScreen';
+import { Dashboard } from '@/components/Dashboard';
+import { Header } from '@/components/Header';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 type Screen = 'welcome' | 'questionnaire' | 'result' | 'login' | 'signup' | 'dashboard';
 
@@ -55,8 +55,8 @@ const Index = () => {
     if (!error) {
       setCurrentScreen('welcome');
       toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
+        title: 'Logout realizado',
+        description: 'Você foi desconectado com sucesso.',
       });
     }
   };
@@ -141,11 +141,7 @@ const Index = () => {
           />
         );
       case 'dashboard':
-        return (
-          <Dashboard
-            onBack={handleBackToWelcome}
-          />
-        );
+        return <Dashboard onBack={handleBackToWelcome} />;
       default:
         return <WelcomeScreen onStart={handleStart} />;
     }
@@ -165,7 +161,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {(currentScreen === 'welcome' || currentScreen === 'questionnaire' || currentScreen === 'result') && (
+      {(currentScreen === 'welcome' ||
+        currentScreen === 'questionnaire' ||
+        currentScreen === 'result') && (
         <Header
           onDashboard={handleShowDashboard}
           onLogin={handleShowLogin}

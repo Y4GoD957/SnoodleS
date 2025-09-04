@@ -1,2 +1,2 @@
-export * from "./navigation-menu"
-export * from "./navigation-menu-variants"
+export * from './navigation-menu';
+export * from './navigation-menu-variants';

@@ -1,8 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { DollarSign, TrendingUp, Package, ArrowLeft, Loader2 } from "lucide-react";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { useAuth } from "@/hooks/useAuth";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { DollarSign, TrendingUp, Package, ArrowLeft, Loader2 } from 'lucide-react';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { useAuth } from '@/hooks/useAuth';
 
 interface DashboardProps {
   onBack: () => void;
@@ -13,11 +13,11 @@ export function Dashboard({ onBack }: DashboardProps) {
   const { data, loading, error } = useDashboardData();
 
   // Calcular porcentagem das metas
-  const salesProgress = data.currentGoals?.sales_goal 
+  const salesProgress = data.currentGoals?.sales_goal
     ? Math.min((data.totalProjects / data.currentGoals.sales_goal) * 100, 100)
     : 0;
-  
-  const revenueProgress = data.currentGoals?.revenue_goal 
+
+  const revenueProgress = data.currentGoals?.revenue_goal
     ? Math.min((data.monthlyRevenue / data.currentGoals.revenue_goal) * 100, 100)
     : 0;
 
@@ -87,7 +87,9 @@ export function Dashboard({ onBack }: DashboardProps) {
                 R$ {data.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </div>
               <p className="text-xs text-muted-foreground">
-                {data.totalProjects > 0 ? `Média de R$ ${(data.totalRevenue / data.totalProjects).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por projeto` : 'Sem receita ainda'}
+                {data.totalProjects > 0
+                  ? `Média de R$ ${(data.totalRevenue / data.totalProjects).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} por projeto`
+                  : 'Sem receita ainda'}
               </p>
             </CardContent>
           </Card>
@@ -124,14 +126,20 @@ export function Dashboard({ onBack }: DashboardProps) {
             ) : (
               <div className="space-y-4">
                 {data.recentProjects.map((project) => (
-                  <div key={project.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                  <div
+                    key={project.id}
+                    className="flex items-center justify-between p-4 bg-muted/30 rounded-lg"
+                  >
                     <div className="space-y-1">
                       <p className="font-medium text-foreground">{project.client_name}</p>
                       <p className="text-sm text-muted-foreground">{project.project_type}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-primary">
-                        R$ {Number(project.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        R${' '}
+                        {Number(project.value).toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                        })}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {new Date(project.sale_date).toLocaleDateString('pt-BR')}
@@ -162,7 +170,9 @@ export function Dashboard({ onBack }: DashboardProps) {
                     return (
                       <div key={type} className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">{type}</span>
-                        <span className="font-medium">{percentage}% ({count})</span>
+                        <span className="font-medium">
+                          {percentage}% ({count})
+                        </span>
                       </div>
                     );
                   })}
@@ -186,8 +196,8 @@ export function Dashboard({ onBack }: DashboardProps) {
                       </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-300" 
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${salesProgress}%` }}
                       ></div>
                     </div>
@@ -196,13 +206,17 @@ export function Dashboard({ onBack }: DashboardProps) {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm text-muted-foreground">Receita</span>
                       <span className="text-sm font-medium">
-                        R$ {data.monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} / 
-                        R$ {Number(data.currentGoals.revenue_goal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        R${' '}
+                        {data.monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{' '}
+                        / R${' '}
+                        {Number(data.currentGoals.revenue_goal).toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                        })}
                       </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-300" 
+                      <div
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${revenueProgress}%` }}
                       ></div>
                     </div>

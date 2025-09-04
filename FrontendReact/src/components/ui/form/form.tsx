@@ -1,5 +1,5 @@
-import { FormProvider } from "react-hook-form"
+import { FormProvider } from 'react-hook-form';
 
-const Form = FormProvider
+const Form = FormProvider;
 
-export { Form }
+export { Form };

@@ -187,210 +187,212 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
   const question = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full border border-purple-300/20 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(168,85,247,0.35)] rounded-xl">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between mb-4">
-            <CardTitle className="text-2xl font-bold text-foreground">
-              Pergunta {currentQuestion + 1} de {questions.length}
-            </CardTitle>
-            <div className="text-sm text-muted-foreground">{Math.round(progress)}%</div>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </CardHeader>
+    <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4 py-20 mt-16">
+      <div className="flex flex-col justify-center w-full max-w-lg">
+        <Card className="max-w-lg w-full border border-purple-300/20 bg-white/95 backdrop-blur-sm shadow-[0_0_25px_rgba(168,85,247,0.35)] rounded-xl">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between mb-4">
+              <CardTitle className="text-2xl font-bold text-foreground">
+                Pergunta {currentQuestion + 1} de {questions.length}
+              </CardTitle>
+              <div className="text-sm text-muted-foreground">{Math.round(progress)}%</div>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </CardHeader>
 
-        <CardContent className="space-y-6">
-          <h3 className="text-xl font-semibold text-foreground mb-6">{question.title}</h3>
+          <CardContent className="space-y-6">
+            <h3 className="text-xl font-semibold text-foreground mb-6">{question.title}</h3>
 
-          <div className="space-y-4">
-            {/* INPUT */}
-            {question.type === "input" && (
-              <Input
-                placeholder={question.placeholder}
-                value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
-                onChange={(e) => handleAnswer(question.id, e.target.value)}
-                className="text-base"
-              />
-            )}
+            <div className="space-y-4">
+              {/* INPUT */}
+              {question.type === "input" && (
+                <Input
+                  placeholder={question.placeholder}
+                  value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
+                  onChange={(e) => handleAnswer(question.id, e.target.value)}
+                  className="text-base"
+                />
+              )}
 
-            {/* TEXTAREA */}
-            {question.type === "textarea" && (
-              <Textarea
-                placeholder={question.placeholder}
-                value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
-                onChange={(e) => handleAnswer(question.id, e.target.value)}
-                className="text-base min-h-[120px]"
-                rows={6}
-              />
-            )}
+              {/* TEXTAREA */}
+              {question.type === "textarea" && (
+                <Textarea
+                  placeholder={question.placeholder}
+                  value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
+                  onChange={(e) => handleAnswer(question.id, e.target.value)}
+                  className="text-base min-h-[120px]"
+                  rows={6}
+                />
+              )}
 
-            {/* RADIO */}
-            {question.type === "radio" && question.options && (
-              <RadioGroup
-                value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
-                onValueChange={(value) => handleAnswer(question.id, value)}
-              >
-                {question.options.map((option) => (
-                  <div key={option.id} className="flex items-center space-x-2">
-                    <RadioGroupItem value={option.id} id={option.id} />
-                    <Label htmlFor={option.id} className="text-base cursor-pointer">
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            )}
+              {/* RADIO */}
+              {question.type === "radio" && question.options && (
+                <RadioGroup
+                  value={(answers[question.id as keyof QuestionnaireData] as string) || ""}
+                  onValueChange={(value) => handleAnswer(question.id, value)}
+                >
+                  {question.options.map((option) => (
+                    <div key={option.id} className="flex items-center space-x-2">
+                      <RadioGroupItem value={option.id} id={option.id} />
+                      <Label htmlFor={option.id} className="text-base cursor-pointer">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              )}
 
-            {/* CHECKBOX */}
-            {question.type === "checkbox" && question.options && (
-              <div className="space-y-3">
-                {question.options.map((option) => (
-                  <div key={option.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={option.id}
-                      checked={(answers.features || []).includes(option.id)}
-                      onCheckedChange={(checked) => {
-                        const currentFeatures = answers.features || [];
-                        if (checked) handleAnswer("features", [...currentFeatures, option.id]);
-                        else handleAnswer("features", currentFeatures.filter((f) => f !== option.id));
-                      }}
-                    />
-                    <Label htmlFor={option.id} className="text-base cursor-pointer">
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* LOGO */}
-            {question.id === "logo" && (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="hasLogo"
-                    checked={Boolean(answers.hasLogo)}
-                    onCheckedChange={(checked) => {
-                      handleAnswer("hasLogo", checked === true);
-                      if (!checked) handleAnswer("logoFile", null);
-                    }}
-                  />
-                  <Label htmlFor="hasLogo" className="text-base cursor-pointer">
-                    Tenho uma logo
-                  </Label>
+              {/* CHECKBOX */}
+              {question.type === "checkbox" && question.options && (
+                <div className="space-y-3">
+                  {question.options.map((option) => (
+                    <div key={option.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={option.id}
+                        checked={(answers.features || []).includes(option.id)}
+                        onCheckedChange={(checked) => {
+                          const currentFeatures = answers.features || [];
+                          if (checked) handleAnswer("features", [...currentFeatures, option.id]);
+                          else handleAnswer("features", currentFeatures.filter((f) => f !== option.id));
+                        }}
+                      />
+                      <Label htmlFor={option.id} className="text-base cursor-pointer">
+                        {option.label}
+                      </Label>
+                    </div>
+                  ))}
                 </div>
+              )}
 
-                {answers.hasLogo ? (
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/png, image/jpeg, image/svg+xml"
-                      onChange={(e) => handleAnswer("logoFile", e.target.files?.[0] ?? null)}
-                      className="mt-2"
-                    />
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Formatos permitidos: PNG, JPG, SVG. Recomendado 512x512px. Máx. 2MB.
-                    </p>
-                  </div>
-                ) : (
+              {/* LOGO */}
+              {question.id === "logo" && (
+                <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id="noLogo"
-                      checked={!answers.hasLogo}
+                      id="hasLogo"
+                      checked={Boolean(answers.hasLogo)}
                       onCheckedChange={(checked) => {
-                        if (checked) {
-                          handleAnswer("hasLogo", false);
-                          handleAnswer("logoFile", null);
-                        }
+                        handleAnswer("hasLogo", checked === true);
+                        if (!checked) handleAnswer("logoFile", null);
                       }}
                     />
-                    <Label htmlFor="noLogo" className="text-base cursor-pointer">
-                      Não tenho logo
+                    <Label htmlFor="hasLogo" className="text-base cursor-pointer">
+                      Tenho uma logo
                     </Label>
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* COLORS */}
-            {question.id === "colors" && (
-              <div className="space-y-6">
-                {(answers.colorPalette ?? ["#000000"]).map((color, index) => (
-                  <div key={index} className="space-y-2">
-                    <HexColorPicker
-                      color={color}
-                      onChange={(newColor) => {
-                        const updated = [...(answers.colorPalette ?? [])];
-                        updated[index] = newColor;
-                        handleAnswer("colorPalette", updated);
-                      }}
-                    />
-                    <Input
-                      value={color}
-                      onChange={(e) => {
-                        const updated = [...(answers.colorPalette ?? [])];
-                        updated[index] = e.target.value;
-                        handleAnswer("colorPalette", updated);
-                      }}
-                    />
-                    <div className="flex space-x-2">
-                      {(answers.colorPalette ?? []).length > 1 && (
-                        <Button
-                          variant="destructive"
-                          onClick={() =>
-                            handleAnswer(
-                              "colorPalette",
-                              (answers.colorPalette ?? []).filter((_, i) => i !== index)
-                            )
+                  {answers.hasLogo ? (
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/svg+xml"
+                        onChange={(e) => handleAnswer("logoFile", e.target.files?.[0] ?? null)}
+                        className="mt-2"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Formatos permitidos: PNG, JPG, SVG. Recomendado 512x512px. Máx. 2MB.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="noLogo"
+                        checked={!answers.hasLogo}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            handleAnswer("hasLogo", false);
+                            handleAnswer("logoFile", null);
                           }
-                        >
-                          Remover
-                        </Button>
-                      )}
+                        }}
+                      />
+                      <Label htmlFor="noLogo" className="text-base cursor-pointer">
+                        Não tenho logo
+                      </Label>
+                    </div>
+                  )}
+                </div>
+              )}
 
-                      {(answers.colorPalette ?? []).length < 4 &&
-                        index === ((answers.colorPalette ?? []).length - 1) && (
+              {/* COLORS */}
+              {question.id === "colors" && (
+                <div className="space-y-6">
+                  {(answers.colorPalette ?? ["#000000"]).map((color, index) => (
+                    <div key={index} className="space-y-2">
+                      <HexColorPicker
+                        color={color}
+                        onChange={(newColor) => {
+                          const updated = [...(answers.colorPalette ?? [])];
+                          updated[index] = newColor;
+                          handleAnswer("colorPalette", updated);
+                        }}
+                      />
+                      <Input
+                        value={color}
+                        onChange={(e) => {
+                          const updated = [...(answers.colorPalette ?? [])];
+                          updated[index] = e.target.value;
+                          handleAnswer("colorPalette", updated);
+                        }}
+                      />
+                      <div className="flex space-x-2">
+                        {(answers.colorPalette ?? []).length > 1 && (
                           <Button
+                            variant="destructive"
                             onClick={() =>
-                              handleAnswer("colorPalette", [...(answers.colorPalette ?? []), "#000000"])
+                              handleAnswer(
+                                "colorPalette",
+                                (answers.colorPalette ?? []).filter((_, i) => i !== index)
+                              )
                             }
                           >
-                            Adicionar cor
+                            Remover
                           </Button>
                         )}
+
+                        {(answers.colorPalette ?? []).length < 4 &&
+                          index === ((answers.colorPalette ?? []).length - 1) && (
+                            <Button
+                              onClick={() =>
+                                handleAnswer("colorPalette", [...(answers.colorPalette ?? []), "#000000"])
+                              }
+                            >
+                              Adicionar cor
+                            </Button>
+                          )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-between pt-6">
-            <Button variant="outline" onClick={handlePrevious} className="flex items-center">
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              {currentQuestion === 0 ? "Voltar ao Início" : "Anterior"}
-            </Button>
-
-            <Button
-              variant={currentQuestion === questions.length - 1 ? "hero" : "default"}
-              onClick={handleNext}
-              disabled={!isAnswered()}
-              className="flex items-center"
-            >
-              {currentQuestion === questions.length - 1 ? (
-                <>
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Finalizar
-                </>
-              ) : (
-                <>
-                  Próxima <ChevronRight className="w-4 h-4 ml-2" />
-                </>
+                  ))}
+                </div>
               )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+
+            <div className="flex justify-between pt-6">
+              <Button variant="outline" onClick={handlePrevious} className="flex items-center">
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                {currentQuestion === 0 ? "Voltar ao Início" : "Anterior"}
+              </Button>
+
+              <Button
+                variant={currentQuestion === questions.length - 1 ? "hero" : "default"}
+                onClick={handleNext}
+                disabled={!isAnswered()}
+                className="flex items-center"
+              >
+                {currentQuestion === questions.length - 1 ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Finalizar
+                  </>
+                ) : (
+                  <>
+                    Próxima <ChevronRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

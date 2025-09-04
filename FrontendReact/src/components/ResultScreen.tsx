@@ -92,85 +92,92 @@ Crie um aplicativo moderno, responsivo e profissional com design atrativo e UX i
   };
 
   return (
-    <div className="min-h-screen bg-gradient-light p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-            {isGenerating ? (
-              <Loader2 className="w-10 h-10 text-primary-foreground animate-spin" />
-            ) : (
-              <CheckCircle className="w-10 h-10 text-primary-foreground" />
-            )}
-          </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            {isGenerating ? 'Gerando seu SaaS...' : generatedCode ? 'SaaS Gerado com Sucesso!' : 'Pronto para Gerar seu SaaS!'}
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            {isGenerating ? 'Aguarde enquanto criamos seu aplicativo personalizado' : 
-             generatedCode ? 'Seu SaaS foi criado e está pronto para uso' :
-             'Clique no botão abaixo para gerar seu SaaS automaticamente'}
-          </p>
+  <div className="min-h-screen bg-gradient-light p-4 grid place-items-center">
+    <div className="w-full max-w-4xl">
+      <div className="text-center mb-8">
+        <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center 
+                        bg-gradient-hero shadow-glow">
+          {isGenerating ? (
+            <Loader2 className="w-10 h-10 text-primary-foreground animate-spin" />
+          ) : (
+            <CheckCircle className="w-10 h-10 text-primary-foreground" />
+          )}
         </div>
+        <h1 className="text-3xl font-bold text-primary-foreground mb-2">
+          {isGenerating
+            ? 'Gerando seu SaaS...'
+            : generatedCode
+            ? 'SaaS Gerado com Sucesso!'
+            : 'Pronto para Gerar seu SaaS!'}
+        </h1>
+        <p className="text-primary-foreground/80 text-lg">
+          {isGenerating
+            ? 'Aguarde enquanto criamos seu aplicativo personalizado'
+            : generatedCode
+            ? 'Seu SaaS foi criado e está pronto para uso'
+            : 'Clique no botão abaixo para gerar seu SaaS automaticamente'}
+        </p>
+      </div>
 
-        {!generatedCode && !isGenerating && (
-          <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm mb-6">
-            <CardContent className="p-6 text-center">
-              <h3 className="text-xl font-semibold mb-4">Especificação Pronta</h3>
-              <p className="text-muted-foreground mb-6">
-                Baseado nas suas respostas, vamos gerar automaticamente um SaaS completo e funcional.
+      {!generatedCode && !isGenerating && (
+        <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm mb-6">
+          <CardContent className="p-6 text-center">
+            <h3 className="text-xl font-semibold mb-4">Especificação Pronta</h3>
+            <p className="text-muted-foreground mb-6">
+              Baseado nas suas respostas, vamos gerar automaticamente um SaaS completo e funcional.
+            </p>
+            <Button
+              variant="hero"
+              size="lg"
+              onClick={handleGenerateCode}
+              className="px-8"
+            >
+              <CheckCircle className="w-5 h-5 mr-2" />
+              Gerar SaaS Agora
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {isGenerating && (
+        <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm mb-6">
+          <CardContent className="p-6 text-center">
+            <div className="space-y-4">
+              <Loader2 className="w-12 h-12 mx-auto animate-spin text-primary" />
+              <h3 className="text-lg font-semibold">Criando seu SaaS personalizado...</h3>
+              <p className="text-muted-foreground">
+                Isso pode levar alguns momentos. Estamos configurando todas as funcionalidades solicitadas.
               </p>
-              <Button 
-                variant="hero" 
-                size="lg"
-                onClick={handleGenerateCode}
-                className="px-8"
-              >
-                <CheckCircle className="w-5 h-5 mr-2" />
-                Gerar SaaS Agora
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        {isGenerating && (
-          <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm mb-6">
-            <CardContent className="p-6 text-center">
-              <div className="space-y-4">
-                <Loader2 className="w-12 h-12 mx-auto animate-spin text-primary" />
-                <h3 className="text-lg font-semibold">Criando seu SaaS personalizado...</h3>
-                <p className="text-muted-foreground">
-                  Isso pode levar alguns momentos. Estamos configurando todas as funcionalidades solicitadas.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {generatedCode && (
+        <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm mb-6">
+          <CardHeader>
+            <CardTitle>Seu SaaS foi Criado!</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-muted/50 rounded-lg p-4 max-h-96 overflow-y-auto">
+              <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
+                {generatedCode}
+              </pre>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        {generatedCode && (
-          <Card className="shadow-card border-0 bg-card/80 backdrop-blur-sm mb-6">
-            <CardHeader>
-              <CardTitle>Seu SaaS foi Criado!</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted/50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                <pre className="text-sm text-foreground whitespace-pre-wrap font-mono">
-                  {generatedCode}
-                </pre>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="flex justify-center space-x-4 mt-8">
-          <Button variant="outline" onClick={onBack}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar
-          </Button>
-          <Button variant="hero" onClick={onStartOver}>
-            Criar Novo SaaS
-          </Button>
-        </div>
+      <div className="flex justify-center space-x-4 mt-8">
+        <Button variant="outline" onClick={onBack}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Voltar
+        </Button>
+        <Button variant="hero" onClick={onStartOver}>
+          Criar Novo SaaS
+        </Button>
       </div>
     </div>
-  );
+  </div>
+);
 }

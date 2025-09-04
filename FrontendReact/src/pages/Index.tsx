@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { WelcomeScreen } from "@/components/WelcomeScreen";
-import { QuestionnaireScreen, QuestionnaireData } from "@/components/QuestionnaireScreen";
-import { ResultScreen } from "@/components/ResultScreen";
-import { LoginScreen } from "@/components/LoginScreen";
-import { SignupScreen } from "@/components/SignupScreen";
-import { Dashboard } from "@/components/Dashboard";
-import { Header } from "@/components/Header";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { WelcomeScreen } from '@/components/WelcomeScreen';
+import { QuestionnaireScreen, QuestionnaireData } from '@/components/QuestionnaireScreen';
+import { ResultScreen } from '@/components/ResultScreen';
+import { LoginScreen } from '@/components/LoginScreen';
+import { SignupScreen } from '@/components/SignupScreen';
+import { Dashboard } from '@/components/Dashboard';
+import { Header } from '@/components/Header';
+import { useToast } from '@/hooks/use-toast';
 
 type Screen = 'welcome' | 'questionnaire' | 'result' | 'login' | 'signup' | 'dashboard';
 
@@ -58,8 +58,8 @@ const Index = () => {
     setUser(null);
     setCurrentScreen('welcome');
     toast({
-      title: "Logout realizado",
-      description: "Você foi desconectado com sucesso.",
+      title: 'Logout realizado',
+      description: 'Você foi desconectado com sucesso.',
     });
   };
 

@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { DollarSign, TrendingUp, Package, ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { DollarSign, TrendingUp, Package, ArrowLeft } from 'lucide-react';
 
 interface DashboardProps {
   onBack: () => void;
@@ -12,16 +12,40 @@ const mockData = {
   totalRevenue: 24500,
   monthlyRevenue: 8950,
   recentProjects: [
-    { id: 1, client_name: "João Silva", project_type: "E-commerce Medical", value: 2500, sale_date: "2024-01-15" },
-    { id: 2, client_name: "Maria Santos", project_type: "Course Platform", value: 1800, sale_date: "2024-01-14" },
-    { id: 3, client_name: "Pedro Costa", project_type: "Clinic Manager", value: 3200, sale_date: "2024-01-13" },
-    { id: 4, client_name: "Ana Lima", project_type: "Restaurant POS", value: 2100, sale_date: "2024-01-12" },
+    {
+      id: 1,
+      client_name: 'João Silva',
+      project_type: 'E-commerce Medical',
+      value: 2500,
+      sale_date: '2024-01-15',
+    },
+    {
+      id: 2,
+      client_name: 'Maria Santos',
+      project_type: 'Course Platform',
+      value: 1800,
+      sale_date: '2024-01-14',
+    },
+    {
+      id: 3,
+      client_name: 'Pedro Costa',
+      project_type: 'Clinic Manager',
+      value: 3200,
+      sale_date: '2024-01-13',
+    },
+    {
+      id: 4,
+      client_name: 'Ana Lima',
+      project_type: 'Restaurant POS',
+      value: 2100,
+      sale_date: '2024-01-12',
+    },
   ],
   projectTypeStats: {
-    "E-commerce": 5,
-    "Clínicas/Saúde": 3,
-    "Educação": 2,
-    "Restaurantes": 2,
+    'E-commerce': 5,
+    'Clínicas/Saúde': 3,
+    Educação: 2,
+    Restaurantes: 2,
   },
   currentGoals: {
     sales_goal: 15,
@@ -30,8 +54,14 @@ const mockData = {
 };
 
 export function Dashboard({ onBack }: DashboardProps) {
-  const salesProgress = Math.min((mockData.totalProjects / mockData.currentGoals.sales_goal) * 100, 100);
-  const revenueProgress = Math.min((mockData.monthlyRevenue / mockData.currentGoals.revenue_goal) * 100, 100);
+  const salesProgress = Math.min(
+    (mockData.totalProjects / mockData.currentGoals.sales_goal) * 100,
+    100
+  );
+  const revenueProgress = Math.min(
+    (mockData.monthlyRevenue / mockData.currentGoals.revenue_goal) * 100,
+    100
+  );
 
   return (
     <div className="min-h-screen bg-gradient-light">
@@ -39,8 +69,12 @@ export function Dashboard({ onBack }: DashboardProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-primary-foreground mb-2">Dashboard Financeiro</h1>
-            <p className="text-primary-foreground/80">Bem-vindo, usuário! Acompanhe o desempenho dos seus projetos</p>
+            <h1 className="text-3xl font-bold text-primary-foreground mb-2">
+              Dashboard Financeiro
+            </h1>
+            <p className="text-primary-foreground/80">
+              Bem-vindo, usuário! Acompanhe o desempenho dos seus projetos
+            </p>
           </div>
           <Button variant="outline" onClick={onBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -68,7 +102,7 @@ export function Dashboard({ onBack }: DashboardProps) {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                R$ {mockData.totalRevenue.toLocaleString("pt-BR")}
+                R$ {mockData.totalRevenue.toLocaleString('pt-BR')}
               </div>
               <p className="text-xs text-muted-foreground">+12% desde o mês passado</p>
             </CardContent>
@@ -81,11 +115,9 @@ export function Dashboard({ onBack }: DashboardProps) {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                R$ {mockData.monthlyRevenue.toLocaleString("pt-BR")}
+                R$ {mockData.monthlyRevenue.toLocaleString('pt-BR')}
               </div>
-              <p className="text-xs text-muted-foreground">
-                +8% desde o mês passado
-              </p>
+              <p className="text-xs text-muted-foreground">+8% desde o mês passado</p>
             </CardContent>
           </Card>
         </div>
@@ -108,10 +140,10 @@ export function Dashboard({ onBack }: DashboardProps) {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-primary">
-                      R$ {project.value.toLocaleString("pt-BR")}
+                      R$ {project.value.toLocaleString('pt-BR')}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {new Date(project.sale_date).toLocaleDateString("pt-BR")}
+                      {new Date(project.sale_date).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
                 </div>
@@ -133,7 +165,9 @@ export function Dashboard({ onBack }: DashboardProps) {
                   return (
                     <div key={type} className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">{type}</span>
-                      <span className="font-medium">{percentage}% ({count})</span>
+                      <span className="font-medium">
+                        {percentage}% ({count})
+                      </span>
                     </div>
                   );
                 })}
@@ -165,7 +199,8 @@ export function Dashboard({ onBack }: DashboardProps) {
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-muted-foreground">Receita</span>
                     <span className="text-sm font-medium">
-                      R$ {mockData.monthlyRevenue.toLocaleString("pt-BR")} / R$ {mockData.currentGoals.revenue_goal.toLocaleString("pt-BR")}
+                      R$ {mockData.monthlyRevenue.toLocaleString('pt-BR')} / R${' '}
+                      {mockData.currentGoals.revenue_goal.toLocaleString('pt-BR')}
                     </span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">

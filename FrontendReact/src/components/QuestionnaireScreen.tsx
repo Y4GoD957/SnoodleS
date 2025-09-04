@@ -270,170 +270,164 @@ export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenP
                 </div>
               )}
 
- {/* LOGO */}
-{question.id === 'logo' && (
-  <div className="space-y-4">
-    {/* Checkbox de "Tenho uma logo" */}
-    <div className="flex items-center space-x-2">
-      <Checkbox
-        id="hasLogo"
-        checked={Boolean(answers.hasLogo)}
-        onCheckedChange={(checked) => {
-          handleAnswer('hasLogo', checked === true);
-          if (!checked) handleAnswer('logoFile', null);
-        }}
-      />
-      <Label htmlFor="hasLogo" className="text-base cursor-pointer">
-        Tenho uma logo
-      </Label>
-    </div>
+              {/* LOGO */}
+              {question.id === 'logo' && (
+                <div className="space-y-4">
+                  {/* Checkbox de "Tenho uma logo" */}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="hasLogo"
+                      checked={Boolean(answers.hasLogo)}
+                      onCheckedChange={(checked) => {
+                        handleAnswer('hasLogo', checked === true);
+                        if (!checked) handleAnswer('logoFile', null);
+                      }}
+                    />
+                    <Label htmlFor="hasLogo" className="text-base cursor-pointer">
+                      Tenho uma logo
+                    </Label>
+                  </div>
 
-    {/* Campo de upload e miniatura */}
-    {answers.hasLogo && (
-      <div className="flex flex-col space-y-2">
-        <label
-          htmlFor="logoUpload"
-          className="inline-block px-4 py-2 text-sm font-medium rounded-md cursor-pointer border border-gray-300 bg-white hover:bg-gray-100 transition-colors"
-        >
-          Escolher arquivo
-        </label>
-        <input
-          id="logoUpload"
-          type="file"
-          accept="image/png, image/jpeg, image/svg+xml"
-          onChange={(e) => handleAnswer('logoFile', e.target.files?.[0] ?? null)}
-          className="hidden"
-        />
+                  {/* Campo de upload e miniatura */}
+                  {answers.hasLogo && (
+                    <div className="flex flex-col space-y-2">
+                      <label
+                        htmlFor="logoUpload"
+                        className="inline-block px-4 py-2 text-sm font-medium rounded-md cursor-pointer border border-gray-300 bg-white hover:bg-gray-100 transition-colors"
+                      >
+                        Escolher arquivo
+                      </label>
+                      <input
+                        id="logoUpload"
+                        type="file"
+                        accept="image/png, image/jpeg, image/svg+xml"
+                        onChange={(e) => handleAnswer('logoFile', e.target.files?.[0] ?? null)}
+                        className="hidden"
+                      />
 
-        {/* Miniatura */}
-        {answers.logoFile && (
-          <div className="mt-2">
-            <p className="text-xs text-muted-foreground mb-1">Pré-visualização:</p>
-            <img
-              src={URL.createObjectURL(answers.logoFile)}
-              alt="Logo selecionada"
-              className="w-20 h-20 object-contain border rounded-md"
-            />
-          </div>
-        )}
+                      {/* Miniatura */}
+                      {answers.logoFile && (
+                        <div className="mt-2">
+                          <p className="text-xs text-muted-foreground mb-1">Pré-visualização:</p>
+                          <img
+                            src={URL.createObjectURL(answers.logoFile)}
+                            alt="Logo selecionada"
+                            className="w-20 h-20 object-contain border rounded-md"
+                          />
+                        </div>
+                      )}
 
-        <p className="text-xs text-muted-foreground">
-          Formatos permitidos: PNG, JPG, SVG. Recomendado 512x512px. Máx. 2MB.
-        </p>
-      </div>
-    )}
+                      <p className="text-xs text-muted-foreground">
+                        Formatos permitidos: PNG, JPG, SVG. Recomendado 512x512px. Máx. 2MB.
+                      </p>
+                    </div>
+                  )}
 
-    {/* Checkbox de "Não tenho logo" */}
-    <div className="flex items-center space-x-2">
-      <Checkbox
-        id="noLogo"
-        checked={!answers.hasLogo}
-        onCheckedChange={(checked) => {
-          if (checked) {
-            handleAnswer('hasLogo', false);
-            handleAnswer('logoFile', null);
-          }
-        }}
-      />
-      <Label htmlFor="noLogo" className="text-base cursor-pointer">
-        Não tenho logo
-      </Label>
-    </div>
-  </div>
-)}
+                  {/* Checkbox de "Não tenho logo" */}
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="noLogo"
+                      checked={!answers.hasLogo}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          handleAnswer('hasLogo', false);
+                          handleAnswer('logoFile', null);
+                        }
+                      }}
+                    />
+                    <Label htmlFor="noLogo" className="text-base cursor-pointer">
+                      Não tenho logo
+                    </Label>
+                  </div>
+                </div>
+              )}
 
+              {/* COLORS */}
+              {question.id === 'colors' && (
+                <div className="space-y-6">
+                  {(answers.colorPalette ?? ['#000000']).map((color, index) => (
+                    <div key={index} className="space-y-4">
+                      {/* Parte de cima: Color Picker e cor ampliada */}
+                      <div className="flex items-center space-x-4">
+                        <HexColorPicker
+                          color={color}
+                          onChange={(newColor) => {
+                            const updated = [...(answers.colorPalette ?? [])];
+                            updated[index] = newColor;
+                            handleAnswer('colorPalette', updated);
+                          }}
+                        />
+                        <div
+                          className="w-36 h-36 rounded-lg border border-gray-300 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                          style={{
+                            backgroundColor: isValidHex(color) ? color : '#fff',
+                          }}
+                        />
+                      </div>
 
-{/* COLORS */}
-{question.id === 'colors' && (
-  <div className="space-y-6">
-    {(answers.colorPalette ?? ['#000000']).map((color, index) => (
-      <div key={index} className="space-y-4">
+                      {/* Parte de baixo: Hex input + botões */}
+                      <div className="flex items-center space-x-2">
+                        <Input
+                          value={color}
+                          onChange={(e) => {
+                            let value = e.target.value;
 
-        {/* Parte de cima: Color Picker e cor ampliada */}
-        <div className="flex items-center space-x-4">
-          <HexColorPicker
-            color={color}
-            onChange={(newColor) => {
-              const updated = [...(answers.colorPalette ?? [])];
-              updated[index] = newColor;
-              handleAnswer('colorPalette', updated);
-            }}
-          />
-          <div
-            className="w-36 h-36 rounded-lg border border-gray-300 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
-            style={{
-              backgroundColor: isValidHex(color) ? color : '#fff',
-            }}
-          />
-        </div>
+                            // Permite apenas 7 caracteres (# + 6 dígitos)
+                            if (value.length > 7) {
+                              value = value.slice(0, 7);
+                            }
 
-        {/* Parte de baixo: Hex input + botões */}
-        <div className="flex items-center space-x-2">
-          <Input
-            value={color}
-            onChange={(e) => {
-              let value = e.target.value;
+                            // Atualiza em tempo real
+                            const updated = [...(answers.colorPalette ?? [])];
+                            updated[index] = value;
+                            handleAnswer('colorPalette', updated);
+                          }}
+                          onBlur={(e) => {
+                            // Valida ao sair do input
+                            const value = e.target.value;
+                            const hexRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+                            if (!hexRegex.test(value)) {
+                              const updated = [...(answers.colorPalette ?? [])];
+                              updated[index] = '#000000'; // valor padrão se inválido
+                              handleAnswer('colorPalette', updated);
+                            }
+                          }}
+                          className="w-24"
+                          placeholder="#000000"
+                        />
 
-              // Permite apenas 7 caracteres (# + 6 dígitos)
-              if (value.length > 7) {
-                value = value.slice(0, 7);
-              }
+                        {(answers.colorPalette ?? []).length > 1 && (
+                          <Button
+                            variant="destructive"
+                            onClick={() =>
+                              handleAnswer(
+                                'colorPalette',
+                                (answers.colorPalette ?? []).filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            Remover
+                          </Button>
+                        )}
 
-              // Atualiza em tempo real
-              const updated = [...(answers.colorPalette ?? [])];
-              updated[index] = value;
-              handleAnswer('colorPalette', updated);
-            }}
-            onBlur={(e) => {
-              // Valida ao sair do input
-              const value = e.target.value;
-              const hexRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
-              if (!hexRegex.test(value)) {
-                const updated = [...(answers.colorPalette ?? [])];
-                updated[index] = '#000000'; // valor padrão se inválido
-                handleAnswer('colorPalette', updated);
-              }
-            }}
-            className="w-24"
-            placeholder="#000000"
-          />
-
-          {(answers.colorPalette ?? []).length > 1 && (
-            <Button
-              variant="destructive"
-              onClick={() =>
-                handleAnswer(
-                  'colorPalette',
-                  (answers.colorPalette ?? []).filter((_, i) => i !== index)
-                )
-              }
-            >
-              Remover
-            </Button>
-          )}
-
-          {(answers.colorPalette ?? []).length < 4 &&
-            index === (answers.colorPalette ?? []).length - 1 && (
-              <Button
-                onClick={() =>
-                  handleAnswer('colorPalette', [
-                    ...(answers.colorPalette ?? []),
-                    '#000000',
-                  ])
-                }
-              >
-                Adicionar cor
-              </Button>
-            )}
-        </div>
-      </div>
-    ))}
-  </div>
-)}
-
-
-
-
+                        {(answers.colorPalette ?? []).length < 4 &&
+                          index === (answers.colorPalette ?? []).length - 1 && (
+                            <Button
+                              onClick={() =>
+                                handleAnswer('colorPalette', [
+                                  ...(answers.colorPalette ?? []),
+                                  '#000000',
+                                ])
+                              }
+                            >
+                              Adicionar cor
+                            </Button>
+                          )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between pt-6">

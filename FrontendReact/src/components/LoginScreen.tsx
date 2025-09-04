@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,19 +13,19 @@ interface AuthResult {
 }
 
 interface LoginScreenProps {
-  onLogin: (email: string, password: string) => Promise<AuthResult>;
   onBack: () => void;
   onShowSignup: () => void;
   onGoogleLogin: () => Promise<AuthResult>;
   onGithubLogin: () => Promise<AuthResult>;
+  onLoginSuccess: (token: string, email: string) => void;
 }
 
 export function LoginScreen({
-  onLogin,
   onBack,
   onShowSignup,
   onGoogleLogin,
   onGithubLogin,
+  onLoginSuccess,
 }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,26 +47,39 @@ export function LoginScreen({
     setIsLoading(true);
 
     try {
-      const { error } = await onLogin(email, password);
+      const response = await axios.post('http://localhost:8000/auth/login', {
+        email,
+        password,
+      });
 
-      if (error) {
+      const { token, user } = response.data;
+
+      toast({
+        title: 'Login realizado com sucesso!',
+        description: `Bem-vindo de volta, ${user.email}.`,
+      });
+
+      onLoginSuccess(token, user.email);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
         toast({
           title: 'Erro no login',
-          description: error.message || 'Credenciais inválidas',
+          description: err.response?.data?.detail || 'Credenciais inválidas',
+          variant: 'destructive',
+        });
+      } else if (err instanceof Error) {
+        toast({
+          title: 'Erro no login',
+          description: err.message,
           variant: 'destructive',
         });
       } else {
         toast({
-          title: 'Login realizado com sucesso!',
-          description: 'Bem-vindo de volta.',
+          title: 'Erro no login',
+          description: 'Ocorreu um erro inesperado',
+          variant: 'destructive',
         });
       }
-    } catch (err) {
-      toast({
-        title: 'Erro no login',
-        description: 'Ocorreu um erro inesperado',
-        variant: 'destructive',
-      });
     } finally {
       setIsLoading(false);
     }

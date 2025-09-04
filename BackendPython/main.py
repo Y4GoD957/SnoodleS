@@ -1,30 +1,28 @@
-# backend/main.py
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+# main.py
+from fastapi import FastAPI
+from app.routes import auth
+from app.middlewares.cors_middleware import add_cors_middleware
+import os
+from dotenv import load_dotenv
+import uvicorn
 
-app = FastAPI()
+# Carregar variáveis de ambiente
+load_dotenv()
 
-origins = ["http://localhost:8080"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = FastAPI(title="SnoodleS Backend")
 
-class LoginDTO(BaseModel):
-    email: str
-    password: str
+# Configurar CORS
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+add_cors_middleware(app, FRONTEND_URL)
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+# Incluir rotas
+app.include_router(auth.router)
 
-@app.post("/auth/login")
-def login(body: LoginDTO):
-    if body.email == "admin@snoodles.com" and body.password == "123":
-        return {"token": "fake-jwt-token", "user": {"email": body.email}}
-    raise HTTPException(status_code=401, detail="Credenciais inválidas")
-
+# Ponto de entrada para executar o servidor via 'python main.py'
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",       # módulo:app
+        host="127.0.0.1", # localhost
+        port=8000,        # porta do backend
+        reload=True       # habilita recarga automática ao alterar código
+    )

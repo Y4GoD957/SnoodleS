@@ -14,7 +14,7 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireData | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [user, setUser] = useState<{ email: string; token: string } | null>(null);
 
   const { toast } = useToast();
 
@@ -37,18 +37,17 @@ const Index = () => {
   const handleShowSignup = () => setCurrentScreen('signup');
   const handleShowDashboard = () => setCurrentScreen(isAuthenticated ? 'dashboard' : 'login');
 
-  // === Funções de autenticação simulada (sem loading) ===
-  const handleLogin = async (email: string, password: string) => {
+  // === Novo método de login com token ===
+  const handleLoginSuccess = (token: string, email: string) => {
     setIsAuthenticated(true);
-    setUser({ email });
+    setUser({ email, token });
     setCurrentScreen('welcome');
-    return { error: null };
   };
 
   const handleSignup = async (name: string, email: string, password: string) => {
     console.log('Signup data:', { name, email, password });
     setIsAuthenticated(true);
-    setUser({ email });
+    setUser({ email, token: 'fake-signup-token' });
     setCurrentScreen('welcome');
     return { error: null };
   };
@@ -66,7 +65,7 @@ const Index = () => {
   const handleGoogleAuth = async (): Promise<{ error: null }> => {
     console.log('Google authentication triggered');
     setIsAuthenticated(true);
-    setUser({ email: 'user@gmail.com' });
+    setUser({ email: 'user@gmail.com', token: 'fake-google-token' });
     setCurrentScreen('welcome');
     return { error: null };
   };
@@ -74,7 +73,7 @@ const Index = () => {
   const handleGithubAuth = async (): Promise<{ error: null }> => {
     console.log('GitHub authentication triggered');
     setIsAuthenticated(true);
-    setUser({ email: 'user@github.com' });
+    setUser({ email: 'user@github.com', token: 'fake-github-token' });
     setCurrentScreen('welcome');
     return { error: null };
   };
@@ -102,11 +101,11 @@ const Index = () => {
       case 'login':
         return (
           <LoginScreen
-            onLogin={handleLogin}
             onBack={handleBackToWelcome}
             onShowSignup={handleShowSignup}
             onGoogleLogin={handleGoogleAuth}
             onGithubLogin={handleGithubAuth}
+            onLoginSuccess={handleLoginSuccess}
           />
         );
       case 'signup':

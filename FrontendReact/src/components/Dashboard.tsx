@@ -1,8 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DollarSign, TrendingUp, Package, ArrowLeft, Loader2 } from "lucide-react";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { useAuth } from "@/hooks/useAuth";
 
 interface DashboardProps {
   onBack: () => void;

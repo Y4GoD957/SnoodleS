@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { QuestionnaireScreen, QuestionnaireData } from "@/components/QuestionnaireScreen";
 import { ResultScreen } from "@/components/ResultScreen";
@@ -6,7 +6,7 @@ import { LoginScreen } from "@/components/LoginScreen";
 import { SignupScreen } from "@/components/SignupScreen";
 import { Dashboard } from "@/components/Dashboard";
 import { Header } from "@/components/Header";
-import { useAuth } from "@/hooks/useAuth";
+
 import { useToast } from "@/hooks/use-toast";
 
 type Screen = 'welcome' | 'questionnaire' | 'result' | 'login' | 'signup' | 'dashboard';
@@ -14,94 +14,89 @@ type Screen = 'welcome' | 'questionnaire' | 'result' | 'login' | 'signup' | 'das
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireData | null>(null);
-  const { user, loading, signIn, signUp, signOut, signInWithGoogle, signInWithGithub } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<{ email: string } | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const { toast } = useToast();
 
-  // Verificar se o usuário está autenticado
-  const isAuthenticated = !!user;
-
-  const handleStart = () => {
-    setCurrentScreen('questionnaire');
-  };
+  // === Funções de navegação e fluxo ===
+  const handleStart = () => setCurrentScreen('questionnaire');
 
   const handleQuestionnaireComplete = (data: QuestionnaireData) => {
     setQuestionnaireData(data);
     setCurrentScreen('result');
   };
 
-  const handleBackToWelcome = () => {
-    setCurrentScreen('welcome');
-  };
-
-  const handleBackToQuestionnaire = () => {
-    setCurrentScreen('questionnaire');
-  };
-
+  const handleBackToWelcome = () => setCurrentScreen('welcome');
+  const handleBackToQuestionnaire = () => setCurrentScreen('questionnaire');
   const handleStartOver = () => {
     setQuestionnaireData(null);
     setCurrentScreen('welcome');
   };
 
+  const handleShowLogin = () => setCurrentScreen('login');
+  const handleShowSignup = () => setCurrentScreen('signup');
+  const handleShowDashboard = () => setCurrentScreen(isAuthenticated ? 'dashboard' : 'login');
+
+  // === Funções de autenticação simulada ===
   const handleLogin = async (email: string, password: string) => {
-    const result = await signIn(email, password);
-    if (!result.error) {
-      setCurrentScreen('welcome');
-    }
-    return result;
-  };
-
-  const handleLogout = async () => {
-    const { error } = await signOut();
-    if (!error) {
-      setCurrentScreen('welcome');
-      toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
-      });
-    }
-  };
-
-  const handleShowLogin = () => {
-    setCurrentScreen('login');
-  };
-
-  const handleShowDashboard = () => {
-    if (isAuthenticated) {
-      setCurrentScreen('dashboard');
-    } else {
-      setCurrentScreen('login');
-    }
-  };
-
-  const handleShowSignup = () => {
-    setCurrentScreen('signup');
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setIsAuthenticated(true);
+    setUser({ email });
+    setCurrentScreen('welcome');
+    setLoading(false);
+    return { error: null };
   };
 
   const handleSignup = async (name: string, email: string, password: string) => {
-    const result = await signUp(email, password, name);
-    if (!result.error) {
-      // Não redirecionar automaticamente - usuário precisa confirmar email
-      setCurrentScreen('login');
-    }
-    return result;
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log('Signup data:', { name, email, password });
+    setIsAuthenticated(true);
+    setUser({ email });
+    setCurrentScreen('welcome');
+    setLoading(false);
+    return { error: null };
   };
 
-  const handleGoogleAuth = async () => {
-    const result = await signInWithGoogle();
-    if (!result.error) {
-      setCurrentScreen('welcome');
-    }
-    return result;
+  const handleLogout = async () => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setIsAuthenticated(false);
+    setUser(null);
+    setCurrentScreen('welcome');
+    setLoading(false);
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado com sucesso.",
+    });
   };
 
-  const handleGithubAuth = async () => {
-    const result = await signInWithGithub();
-    if (!result.error) {
-      setCurrentScreen('welcome');
-    }
-    return result;
+  const handleGoogleAuth = async (): Promise<{ error: null }> => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log('Google authentication triggered');
+    setIsAuthenticated(true);
+    setUser({ email: 'user@gmail.com' });
+    setCurrentScreen('welcome');
+    setLoading(false);
+    return { error: null };
   };
 
+  const handleGithubAuth = async (): Promise<{ error: null }> => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log('GitHub authentication triggered');
+    setIsAuthenticated(true);
+    setUser({ email: 'user@github.com' });
+    setCurrentScreen('welcome');
+    setLoading(false);
+    return { error: null };
+  };
+
+  // === Renderização das telas ===
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
@@ -141,17 +136,13 @@ const Index = () => {
           />
         );
       case 'dashboard':
-        return (
-          <Dashboard
-            onBack={handleBackToWelcome}
-          />
-        );
+        return <Dashboard onBack={handleBackToWelcome} />;
       default:
         return <WelcomeScreen onStart={handleStart} />;
     }
   };
 
-  // Mostrar loading enquanto verificamos a autenticação
+  // === Loading global simulado ===
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-light flex items-center justify-center">

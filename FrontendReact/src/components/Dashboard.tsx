@@ -39,8 +39,8 @@ export function Dashboard({ onBack }: DashboardProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard Financeiro</h1>
-            <p className="text-muted-foreground">Bem-vindo, usuário! Acompanhe o desempenho dos seus projetos</p>
+            <h1 className="text-3xl font-bold text-primary-foreground mb-2">Dashboard Financeiro</h1>
+            <p className="text-primary-foreground/80">Bem-vindo, usuário! Acompanhe o desempenho dos seus projetos</p>
           </div>
           <Button variant="outline" onClick={onBack}>
             <ArrowLeft className="w-4 h-4 mr-2" />

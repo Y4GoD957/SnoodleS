@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
-import { QuestionnaireData } from './QuestionnaireScreen';
 import { useToast } from '@/hooks/use-toast';
+import type { QuestionnaireData } from '@/types/questionnaire';
 
 interface ResultScreenProps {
   data: QuestionnaireData;

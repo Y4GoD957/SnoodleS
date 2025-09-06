@@ -7,62 +7,41 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2 } from 'lucide-react';
 import { HexColorPicker } from 'react-colorful';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { api } from '@/services/api';
+import type {
+  QuestionnaireData,
+  QuestionnaireAnswers,
+  Question,
+  QuestionId,
+} from '@/types/questionnaire';
 
-export interface QuestionnaireData {
-  projectName: string;
-  niche: string;
-  colors: string;
-  features: string[];
-  aiIntegration: string;
-  messageAutomation: string;
-  targetAudience: string;
-  adminPanel: string;
-  platform: string;
-  observations: string;
-  hasLogo: boolean;
-  logoFile: File | null;
-  colorPalette: string[];
-}
-
-type QuestionId = keyof QuestionnaireData | 'logo' | 'colors';
-
-interface QuestionnaireScreenProps {
-  onComplete: (data: QuestionnaireData) => void;
-  onBack: () => void;
-}
-
-const isValidHex = (hex: string) => /^#([0-9A-Fa-f]{6})$/.test(hex);
-
-const questions: {
-  id: QuestionId;
-  title: string;
-  type: 'input' | 'radio' | 'checkbox' | 'textarea' | 'custom';
-  placeholder?: string;
-  options?: { id: string; label: string }[];
-}[] = [
+// Lista de perguntas do formulário
+const questions: Question[] = [
   {
     id: 'projectName',
     title: 'Qual é o nome do seu projeto?',
     type: 'input',
-    placeholder: 'Ex: SnoodleS, ClínicaX, MinhaLoja',
+    placeholder: 'Ex: SnoodleS, ClínicaX',
   },
   {
     id: 'niche',
     title: 'Qual é o nicho do seu aplicativo?',
     type: 'input',
-    placeholder: 'Ex: clínica, e-commerce, cursos online, etc.',
+    placeholder: 'Ex: clínica, e-commerce...',
   },
   {
     id: 'logo',
     title: 'Você possui uma logo para o projeto?',
-    type: 'custom',
+    type: 'file',
   },
   {
     id: 'colors',
     title: 'Quais cores principais você gostaria de usar?',
-    type: 'custom',
+    type: 'color',
   },
   {
     id: 'features',
@@ -104,7 +83,7 @@ const questions: {
     id: 'targetAudience',
     title: 'Qual é o público-alvo principal?',
     type: 'input',
-    placeholder: 'Ex: clientes finais, empresas, crianças, médicos, professores',
+    placeholder: 'Ex: clientes finais, empresas...',
   },
   {
     id: 'adminPanel',
@@ -129,62 +108,216 @@ const questions: {
     id: 'observations',
     title: 'Observações adicionais do cliente',
     type: 'textarea',
-    placeholder:
-      'Descreva qualquer informação adicional, requisitos específicos ou observações importantes sobre o projeto...',
+    placeholder: 'Descreva requisitos especiais...',
   },
 ];
 
-export function QuestionnaireScreen({ onComplete, onBack }: QuestionnaireScreenProps) {
+const isValidHex = (hex: string) => /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex);
+
+export function QuestionnaireScreen({
+  onComplete,
+  onBack,
+}: {
+  onComplete: (d: QuestionnaireData) => void;
+  onBack: () => void;
+}) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Partial<QuestionnaireData>>({
     features: [],
-    colorPalette: ['#000000'],
+    colorPalette: ['#6b21a8'], // exemplo inicial
     hasLogo: false,
     logoFile: null,
     projectName: '',
   });
 
-  const handleAnswer = <K extends QuestionId>(
-    questionId: K,
-    value: K extends keyof QuestionnaireData ? QuestionnaireData[K] : unknown
-  ) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [result, setResult] = useState<{
+    code: string;
+    previewUrl?: string;
+    prompt?: string;
+  } | null>(null);
+
+  const handleAnswer = <K extends QuestionId>(questionId: K, value: QuestionnaireAnswers[K]) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion((prev) => prev + 1);
-    } else {
-      onComplete(answers as QuestionnaireData);
-    }
+    if (currentQuestion < questions.length - 1) setCurrentQuestion((p) => p + 1);
+    else handleFinish();
   };
-
   const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion((prev) => prev - 1);
-    } else {
-      onBack();
-    }
+    if (currentQuestion > 0) setCurrentQuestion((p) => p - 1);
+    else onBack();
   };
 
   const isAnswered = () => {
-    const question = questions[currentQuestion];
-    const answer = answers[question.id as keyof QuestionnaireData];
-
-    if (question.id === 'observations') return true;
-
-    if (question.type === 'checkbox') return Array.isArray(answer) && answer.length > 0;
-
-    if (question.id === 'logo') return answers.hasLogo !== undefined;
-
-    if (question.id === 'colors') return (answers.colorPalette ?? []).length > 0;
-
-    return answer && answer.toString().trim() !== '';
+    const q = questions[currentQuestion];
+    const ans = answers[q.id as keyof QuestionnaireData];
+    if (q.id === 'observations') return true;
+    if (q.type === 'checkbox') return Array.isArray(ans) && ans.length > 0;
+    if (q.id === 'logo') return answers.hasLogo !== undefined;
+    if (q.id === 'colors') return (answers.colorPalette ?? []).length > 0;
+    return ans !== undefined && ans !== null && String(ans).trim() !== '';
   };
 
+  // helper: file -> dataURL
+  const fileToDataUrl = (file: File | null): Promise<string | null> =>
+    new Promise((resolve) => {
+      if (!file) return resolve(null);
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result));
+      fr.onerror = () => resolve(null);
+      fr.readAsDataURL(file);
+    });
+
+  // ---------- FINAL: chama backend para traduzir (Google Translate) + gerar via Lovable ----------
+  const handleFinish = async () => {
+    try {
+      setIsGenerating(true);
+
+      // montar payload (convert logoFile se houver)
+      const logoDataUrl = answers.logoFile ? await fileToDataUrl(answers.logoFile as File) : null;
+
+      const payload = {
+        projectName: answers.projectName ?? '',
+        niche: answers.niche ?? '',
+        features: answers.features ?? [],
+        aiIntegration: answers.aiIntegration ?? '',
+        messageAutomation: answers.messageAutomation ?? '',
+        targetAudience: answers.targetAudience ?? '',
+        adminPanel: answers.adminPanel ?? '',
+        platform: answers.platform ?? '',
+        observations: answers.observations ?? '',
+        colorPalette: answers.colorPalette ?? [],
+        hasLogo: !!answers.hasLogo,
+        logoDataUrl,
+      };
+
+      // chama endpoint do backend que:
+      //  - traduz com Google Translate (pt -> en)
+      //  - monta prompt em inglês e loga no terminal do backend
+      //  - (opcional) envia o prompt ao Lovable e retorna código + preview
+      const res = await api.post('/generate-project', payload, { timeout: 120000 }); // backend: /generate-project
+      const data = res.data as { prompt?: string; code?: string; previewUrl?: string };
+
+      // mostrar prompt no console do browser (adicional)
+      if (data.prompt) {
+        console.log(
+          '=== Generated English Prompt (backend also logged this to server terminal) ==='
+        );
+        console.log(data.prompt);
+      }
+
+      setResult({
+        code: data.code ?? '// No code returned',
+        previewUrl: data.previewUrl,
+        prompt: data.prompt,
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error(err.message);
+      } else {
+        console.error(err);
+      }
+      alert('Erro ao gerar projeto. Veja o console para detalhes.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+  // -----------------------------------------------------------------------------------------------
+
+  // se já gerou resultado: mostrar código + preview + prompt
+  if (result) {
+    return (
+      <div className="min-h-screen bg-gradient-light flex items-center justify-center p-4 py-20">
+        <div className="w-full max-w-5xl space-y-6">
+          <Card className="p-4">
+            <CardHeader>
+              <CardTitle>Prompt em inglês (para validação)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <pre className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-4 rounded">
+                {result.prompt}
+              </pre>
+            </CardContent>
+          </Card>
+
+          <Card className="p-4">
+            <CardHeader>
+              <CardTitle>Código Gerado</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SyntaxHighlighter language="javascript" style={dracula}>
+                {result.code}
+              </SyntaxHighlighter>
+            </CardContent>
+          </Card>
+
+          <Card className="p-4">
+            <CardHeader>
+              <CardTitle>Preview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {result.previewUrl ? (
+                <iframe
+                  src={result.previewUrl}
+                  className="w-full h-[600px] border rounded"
+                  title="preview"
+                />
+              ) : (
+                <p className="text-muted-foreground">Nenhuma pré-visualização disponível.</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end space-x-2">
+            <Button
+              onClick={() => {
+                // permitir reiniciar / gerar novamente
+                setResult(null);
+                setCurrentQuestion(0);
+              }}
+            >
+              Gerar novamente
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (result.code) {
+                  // opcional: passar código para callback onComplete
+                  try {
+                    onComplete({
+                      projectName: (answers.projectName as string) ?? '',
+                      niche: (answers.niche as string) ?? '',
+                      colors: (answers.colors as string) ?? '',
+                      features: (answers.features as string[]) ?? [],
+                      aiIntegration: (answers.aiIntegration as string) ?? '',
+                      messageAutomation: (answers.messageAutomation as string) ?? '',
+                      targetAudience: (answers.targetAudience as string) ?? '',
+                      adminPanel: (answers.adminPanel as string) ?? '',
+                      platform: (answers.platform as string) ?? '',
+                      observations: (answers.observations as string) ?? '',
+                      hasLogo: !!answers.hasLogo,
+                      logoFile: answers.logoFile ?? null,
+                      colorPalette: answers.colorPalette ?? [],
+                    } as QuestionnaireData);
+                  } catch {
+                    onComplete(answers as unknown as QuestionnaireData);
+                  }
+                } else {
+                  onComplete(answers as unknown as QuestionnaireData);
+                }
+              }}
+            >
+              Finalizar
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // layout do form (mantive muitos dos controles originais)
   const progress = ((currentQuestion + 1) / questions.length) * 100;
   const question = questions[currentQuestion];
 

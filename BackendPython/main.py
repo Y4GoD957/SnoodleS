@@ -1,6 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from app.routes import auth
+from app.routes import generate
 from app.middlewares.cors_middleware import add_cors_middleware
 import os
 from dotenv import load_dotenv
@@ -17,6 +18,7 @@ add_cors_middleware(app, FRONTEND_URL)
 
 # Incluir rotas
 app.include_router(auth.router)
+app.include_router(generate.router)
 
 # Ponto de entrada para executar o servidor via 'python main.py'
 if __name__ == "__main__":

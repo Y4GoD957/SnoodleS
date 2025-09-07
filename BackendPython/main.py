@@ -1,3 +1,4 @@
+# main.py
 from fastapi import FastAPI
 from app.routes import auth, profiles, monthly_goals, projects
 from app.middlewares.cors_middleware import add_cors_middleware
@@ -13,7 +14,7 @@ app = FastAPI(title="SnoodleS Backend")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 add_cors_middleware(app, FRONTEND_URL)
 
-# Incluir rotas
+# Incluir routers
 app.include_router(auth.router)
 app.include_router(profiles.router)
 app.include_router(monthly_goals.router)
